@@ -1,0 +1,15 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build & Deploy",
+            "type": "shell",
+            "command": "(adb connect 192.168.43.1:5555) -and (./gradlew installRelease)",
+            "problemMatcher": [
+                "$gradle"
+            ]
+        }
+    ]
+}
