@@ -58,22 +58,9 @@ abstract public class AbstractAuto extends LinearOpMode {
         if (isStopRequested()) return;
 
         ringVision.setViewportPaused(true);
-        appendages.setBlinkinPattern(basePattern);
+        //appendages.setBlinkinPattern(basePattern);
 
-        appendages.asyncUpdateRingsInElevator();
-        appendages.updateLights(alliance);
-    }
-
-    public void shootPowershots(double turnAngles[]) {
-        for (int i = 0; i < GameConstants.MAX_RINGS_IN_ROBOT; i++) {
-            appendages.shootRings(1);
-            sleep(POWERSHOT_SHOOT_DELAY);
-
-            if (i == GameConstants.MAX_RINGS_IN_ROBOT - 1) break;
-
-            drive.turnLeft(turnAngles[i]);
-            sleep(POWERSHOT_MOVE_DELAY);
-        }
+        //appendages.updateLights(alliance);
     }
 
     // Runs till opmode start
@@ -109,9 +96,9 @@ abstract public class AbstractAuto extends LinearOpMode {
     }
 
     private void flashLights(RevBlinkinLedDriver.BlinkinPattern pattern, FlashLength length) {
-        appendages.setBlinkinPattern(pattern);
+        //appendages.setBlinkinPattern(pattern);
         sleep(length == FlashLength.LONG ? LIGHT_LONG_FLASH_ON_TIME : LIGHT_SHORT_FLASH_ON_TIME);
-        appendages.setBlinkinPattern(BlinkinPatterns.OFF);
+        //appendages.setBlinkinPattern(BlinkinPatterns.OFF);
         sleep(LIGHT_FLASH_OFF_TIME);
     }
 }

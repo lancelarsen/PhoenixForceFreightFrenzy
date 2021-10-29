@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.appendages.AppendagesTeleOp;
+
 import org.firstinspires.ftc.teamcode.drive.MecanumAutonomous;
 import org.firstinspires.ftc.teamcode.drive.MecanumTeleOp;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
@@ -49,6 +51,8 @@ public class TeleOp {
     private LinearOpMode opMode;
     private AutoUtils.Alliance alliance;
 
+    private AppendagesTeleOp appendages;
+
     private MecanumTeleOp drive;
     private MecanumAutonomous mecanumAuto;
 
@@ -56,11 +60,15 @@ public class TeleOp {
         this.opMode = opMode;
         this.alliance = alliance;
 
+        appendages = new AppendagesTeleOp(opMode);
+
         drive = new MecanumTeleOp(opMode);
+        drive.enableTurning(true);
         mecanumAuto = new MecanumAutonomous(opMode);
     }
 
     public void run() {
         drive.arcadeDrive();
+        appendages.updateTankDrive();
     }
 }
