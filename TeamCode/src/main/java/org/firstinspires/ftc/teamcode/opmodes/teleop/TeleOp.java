@@ -54,7 +54,6 @@ public class TeleOp {
     private AppendagesTeleOp appendages;
 
     private MecanumTeleOp drive;
-    private MecanumAutonomous mecanumAuto;
 
     public TeleOp(LinearOpMode opMode, AutoUtils.Alliance alliance) {
         this.opMode = opMode;
@@ -64,11 +63,14 @@ public class TeleOp {
 
         drive = new MecanumTeleOp(opMode);
         drive.enableTurning(true);
-        mecanumAuto = new MecanumAutonomous(opMode);
     }
 
     public void run() {
         drive.arcadeDrive();
-        appendages.updateTankDrive();
+        appendages.updateLights(alliance);
+        appendages.updateTankDrive(drive.getForwardDriveSpeed());
+        appendages.updateIntake();
+        appendages.updateDuckWheels();
+        appendages.updateGondola();
     }
 }

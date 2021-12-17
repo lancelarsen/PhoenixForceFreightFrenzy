@@ -47,7 +47,7 @@ public class DriveConstants {
      */
     public static double WHEEL_RADIUS = 1.88976; // in --- 96mm diam --- https://www.gobilda.com/96mm-mecanum-wheel-set-70a-durometer-bearing-supported-rollers/
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 19.5; // in (was 15)
+    public static double TRACK_WIDTH = 12.25; // in
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -59,9 +59,9 @@ public class DriveConstants {
 //    public static double kA = 0;
 //    public static double kStatic = 0;
 
-    public static double kV = 0.012;
+    public static double kV = 0.018;
     public static double kA = 0.004;
-    public static double kStatic = 0.1;
+    public static double kStatic = 0.02;
 
     /*
      * These values are used to generate the trajectories for you robot. To ensure proper operation,
@@ -73,7 +73,7 @@ public class DriveConstants {
     //--- Max Velocity = (Max RPM / 60) * gear ration * wheel radius * 2 pi
     //--- (435 RPM / 60) * 1 * 1.88976 in * 2 pi = 86, 80% of max is recommended = ~68
     //--- MaxVelocityTuner opmode says MAX_VEL = 70 and Voltage Compensated kF is 15.45
-    public static double MAX_VEL = 70; //--- (was 30)
+    public static double MAX_VEL = 30; //--- (was 70)
     public static double MAX_ACCEL = 30;
     //--- Calculated with MaxAngularVelocityTuner opmode
     public static double MAX_ANG_VEL = 7.16; // (was Math.toRadians(60);)

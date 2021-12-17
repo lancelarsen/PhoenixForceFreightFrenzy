@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.drive.BotMecanumDrive;
  * This is a simple routine to test turning capabilities.
  */
 @Config
-@Disabled
+//@Disabled
 @Autonomous(group = "drive")
 public class TurnTest extends LinearOpMode {
     public static double ANGLE = 180; // deg
@@ -24,6 +24,7 @@ public class TurnTest extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        //drive.turn(Math.toRadians(ANGLE));
+        drive.turnAsync(Math.toRadians(ANGLE));
+        drive.waitForIdle();
     }
 }

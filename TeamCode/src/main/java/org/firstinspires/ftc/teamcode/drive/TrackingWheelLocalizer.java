@@ -33,13 +33,13 @@ public class TrackingWheelLocalizer extends ThreeTrackingWheelLocalizer {
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
     //--- 15 inches is measured, but using TrackingWheelLateralDistanceTuner opmode - we calc as 15.7
-    public static double LATERAL_DISTANCE = 15.7; // in; distance between the left and right wheels
+    public static double LATERAL_DISTANCE = 6.5; // in; distance between the left and right wheels
 
-    public static double FORWARD_OFFSET = -7.5; // in; offset of the lateral wheel
+    public static double FORWARD_OFFSET = -0.5; // in; offset of the lateral wheel
 
     //--- Calculated with the LocalizationTest opmode and moving the robot 100' forward manually and dividing 100/distance in opmode
-    public static double X_MULTIPLIER = 0.941; // Multiplier in the X direction
-    public static double Y_MULTIPLIER = 0.942; // Multiplier in the Y direction
+    public static double X_MULTIPLIER = 1; // Multiplier in the X direction
+    public static double Y_MULTIPLIER = 1; // Multiplier in the Y direction
 
     private Encoder leftEncoder, rightEncoder, frontEncoder;
 
@@ -50,10 +50,10 @@ public class TrackingWheelLocalizer extends ThreeTrackingWheelLocalizer {
                 new Pose2d(FORWARD_OFFSET, 0, Math.toRadians(90)) // front
         ));
 
-        leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "lr"));
-        rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "rr"));
+        leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "frontIntakeRoller"));
+        rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "tankDrive"));
         //--- Using encoder port from this motor as we aren't using an encoder on the roller
-        frontEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "intakeRoller"));
+        frontEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "rf"));
 
         // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
         leftEncoder.setDirection(Encoder.Direction.REVERSE);

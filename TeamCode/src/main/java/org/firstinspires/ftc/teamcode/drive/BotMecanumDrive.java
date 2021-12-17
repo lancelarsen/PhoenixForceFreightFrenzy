@@ -58,10 +58,15 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  */
 @Config
 public class BotMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
+    //public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 0);
+    //public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
 
-    public static double LATERAL_MULTIPLIER = 2;
+    //public static double LATERAL_MULTIPLIER = 2;
+
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
+
+    public static double LATERAL_MULTIPLIER = 1;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -70,8 +75,7 @@ public class BotMecanumDrive extends MecanumDrive {
     public static int POSE_HISTORY_LIMIT = -1;
 
     public final static double FAST_SPEED_MULTIPLIER = 1.0;
-    public final static double SLOW_SPEED_MULTIPLIER = 0.5;
-    public final static double SUPER_SLOW_SPEED_MULTIPLIER = 0.2;
+    public final static double SLOW_SPEED_MULTIPLIER = 0.2;
 
     public enum Mode {
         IDLE,

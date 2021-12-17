@@ -29,11 +29,11 @@ abstract public class AbstractAuto extends LinearOpMode {
     public void initAuto(AutoUtils.Alliance alliance, AutoUtils.StartingPosition startingPosition) {
         drive = new MecanumAutonomous(this);
         appendages = new AppendagesAutonomous(this);
-        ringVision = new RingVision(hardwareMap);
+        //ringVision = new RingVision(hardwareMap);
 
         drive.setSpeed(MecanumAutonomous.Speed.FAST);
 
-        ringVision.init(alliance, startingPosition);
+        //ringVision.init(alliance, startingPosition);
 
         RevBlinkinLedDriver.BlinkinPattern basePattern;
 
@@ -57,7 +57,7 @@ abstract public class AbstractAuto extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        ringVision.setViewportPaused(true);
+        //ringVision.setViewportPaused(true);
         //appendages.setBlinkinPattern(basePattern);
 
         //appendages.updateLights(alliance);
@@ -83,7 +83,7 @@ abstract public class AbstractAuto extends LinearOpMode {
                 }
 
                 for (int i = 0; i < ringCount; i++) {
-                    flashLights(BlinkinPatterns.RING_PATTERN, FlashLength.SHORT);
+                    //flashLights(BlinkinPatterns.RING_PATTERN, FlashLength.SHORT);
                 }
             }
         };

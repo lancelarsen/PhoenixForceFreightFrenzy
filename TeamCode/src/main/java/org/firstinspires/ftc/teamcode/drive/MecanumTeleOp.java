@@ -37,12 +37,10 @@ public class MecanumTeleOp extends BotMecanumDrive {
     }
 
     public void arcadeDrive() {
-        if (opMode.gamepad1.y) {
+        if (opMode.gamepad1.a) {
             speedMultiplier = FAST_SPEED_MULTIPLIER;
         } else if (opMode.gamepad1.b) {
             speedMultiplier = SLOW_SPEED_MULTIPLIER;
-        } else if (opMode.gamepad1.x) {
-            speedMultiplier = SUPER_SLOW_SPEED_MULTIPLIER;
         }
 
         Pose2d drivePower = new Pose2d();
@@ -62,14 +60,22 @@ public class MecanumTeleOp extends BotMecanumDrive {
             }
         } else {
             drivePower = new Pose2d(
-                    -opMode.gamepad1.left_stick_y * speedMultiplier,
-                    -opMode.gamepad1.left_stick_x * speedMultiplier,
+                    getForwardDriveSpeed() * speedMultiplier,
+                    getLateralDriveSpeed() * speedMultiplier,
                     turningEnabled ? -opMode.gamepad1.right_stick_x * speedMultiplier : 0
                     );
         }
 
         setWeightedDrivePower(drivePower);
         update();
+    }
+
+    public double getForwardDriveSpeed() {
+        return -opMode.gamepad1.left_stick_y;
+    }
+
+    public double getLateralDriveSpeed() {
+        return -opMode.gamepad1.left_stick_x;
     }
 
     /* Mimics auto API for auto-in-teleop programming */
