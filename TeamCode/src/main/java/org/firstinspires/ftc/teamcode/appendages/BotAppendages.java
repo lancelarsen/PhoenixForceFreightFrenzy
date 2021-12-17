@@ -23,13 +23,20 @@ import static org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils.sleep;
 
 @Config
 public class BotAppendages {
+    public static enum GondolaLiftDirection {
+        EXTEND,
+        RETRACT,
+        HOLD
+    }
+
     public static enum GondolaExtakeDirection {
         FORWARD,
         REVERSE,
-        OFF
+        OFF    
     }
 
     public final static double TRIGGER_PRESSED_THRESH = 0.5;
+    public final static double JOYSTICK_ACTIVE_THRESHOLD = 0.4;
     public final static double JOYSTICK_DEAD_ZONE = 0.05;
 
     public static final double TANK_DRIVE_INTAKE_SPEED = 1.0;
@@ -44,7 +51,7 @@ public class BotAppendages {
 
     public static final double GONDOLA_LIFTER_DOWN_POSITION = 0;
     public static final double GONDOLA_LIFTER_UP_POSITION = 63;
-    public static final double GONDOLA_LIFTER_SPEED = 1.0;
+    public static final double GONDOLA_LIFTER_SPEED = 0.5;
     public static final double GONDOLA_PLUNGER_RETRACTED_POSITION = 0.65;
     public static final double GONDOLA_PLUNGER_EXTENDED_POSITION = 0.2;
     public static final double GONDOLA_CONVEYOR_SPEED = -1.0;
@@ -87,6 +94,7 @@ public class BotAppendages {
         gondolaConveyor = hardwareMap.get(CRServo.class, "gondolaConveyor");
 
         gondolaLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        gondolaLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         gondolaLifter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
@@ -127,17 +135,24 @@ public class BotAppendages {
         rightDuckWheel.setPower(-speed);
     }
 
-    public void liftGondola(boolean lift) {
-        double lifterPosition = 0;
-        if (lift) {
-            lifterPosition = GONDOLA_LIFTER_UP_POSITION;
-        } else {
-            lifterPosition = GONDOLA_LIFTER_DOWN_POSITION;
-        }
+    public void setGondolaLiftDirection(GondolaLiftDirection direction) {
 
-        gondolaLifter.setTargetPosition(EncoderUtil.inchesToTicks(EncoderUtil.Motor.GOBILDA_5202, lifterPosition));
-        gondolaLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        gondolaLifter.setPower(GONDOLA_LIFTER_SPEED);
+        double maxPos = EncoderUtil.inchesToTicks(EncoderUtil.Motor.GOBILDA_5202, GONDOLA_LIFTER_UP_POSITION);
+        double minPos = EncoderUtil.inchesToTicks(EncoderUtil.Motor.GOBILDA_5202, GONDOLA_LIFTER_DOWN_POSITION);
+
+        if (direction == GondolaLiftDirection.EXTEND && gondolaLifter.getCurrentPosition() >= maxPos)
+            direction = GondolaLiftDirection.HOLD;
+
+        if (direction == GondolaLiftDirection.RETRACT && gondolaLifter.getCurrentPosition() <= minPos)
+            direction = GondolaLiftDirection.HOLD;
+
+        double speed = GONDOLA_LIFTER_SPEED;
+        if (direction == GondolaLiftDirection.RETRACT) 
+            speed *= -1;
+        if (direction == GondolaLiftDirection.HOLD) 
+            speed = 0;
+
+        gondolaLifter.setPower(speed);
     }
 
     public void runGondolaExtake(GondolaExtakeDirection direction) {

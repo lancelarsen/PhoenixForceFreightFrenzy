@@ -30,7 +30,7 @@ public class AppendagesTeleOp extends BotAppendages {
 
     private ButtonToggle duckWheelsToggle = new ButtonToggle();
 
-    private boolean isGondolaLifted = false;
+    private ButtonToggle gondolaLifterAdjToggle = new ButtonToggle();
 
     public AppendagesTeleOp(LinearOpMode opMode) {
         super(opMode.hardwareMap);
@@ -120,13 +120,25 @@ public class AppendagesTeleOp extends BotAppendages {
     }
 
     public void updateGondola() {
-        if (opMode.gamepad2.right_bumper) {
-            isGondolaLifted = true;
-        } else if (opMode.gamepad2.right_trigger > TRIGGER_PRESSED_THRESH) {
-            isGondolaLifted = false;
+        boolean adjButtonPressed = opMode.gamepad2.right_stick_button;
+        gondolaLifterAdjToggle.update(adjButtonPressed);
+        if (!gondolaLifterAdjToggle.isActive() && adjButtonPressed) {
+            gondolaLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            gondolaLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
 
-        liftGondola(isGondolaLifted);
+        if (gondolaLifterAdjToggle.isActive()) {
+            gondolaLifter.setPower(-opMode.gamepad2.right_stick_y);
+        } else {
+            if (opMode.gamepad2.right_bumper) {
+                setGondolaLiftDirection(GondolaLiftDirection.EXTEND);
+            } else if (opMode.gamepad2.right_trigger > TRIGGER_PRESSED_THRESH) {
+                setGondolaLiftDirection(GondolaLiftDirection.RETRACT);
+            } else {
+                setGondolaLiftDirection(GondolaLiftDirection.HOLD);
+            }
+        }
+
 
         GondolaExtakeDirection gondolaDirection = GondolaExtakeDirection.OFF;
         if (opMode.gamepad2.x) {
