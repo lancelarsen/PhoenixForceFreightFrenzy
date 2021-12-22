@@ -23,6 +23,8 @@ public class MecanumTeleOp extends BotMecanumDrive {
     private double speedMultiplier = FAST_SPEED_MULTIPLIER;
     private boolean turningEnabled = false;
 
+    private double stickGains[] = {1, 1, 1};
+
     public MecanumTeleOp(LinearOpMode opMode) {
         super(opMode.hardwareMap);
         this.opMode = opMode;
@@ -34,6 +36,16 @@ public class MecanumTeleOp extends BotMecanumDrive {
 
     public void enableTurning(boolean turningEnabled) {
         this.turningEnabled = turningEnabled;
+    }
+
+    public void setStickGains(double gain) {
+        setStickGains(gain, gain, gain);
+    }
+
+    public void setStickGains(double leftXGain, double leftYGain, double rightXGain) {
+        this.stickGains[0] = leftXGain;
+        this.stickGains[1] = leftYGain;
+        this.stickGains[2] = rightXGain;
     }
 
     public void arcadeDrive() {
@@ -62,7 +74,7 @@ public class MecanumTeleOp extends BotMecanumDrive {
             drivePower = new Pose2d(
                     getForwardDriveSpeed() * speedMultiplier,
                     getLateralDriveSpeed() * speedMultiplier,
-                    turningEnabled ? -opMode.gamepad1.right_stick_x * speedMultiplier : 0
+                    turningEnabled ? getTurningAmount() * speedMultiplier : 0
                     );
         }
 
@@ -71,11 +83,15 @@ public class MecanumTeleOp extends BotMecanumDrive {
     }
 
     public double getForwardDriveSpeed() {
-        return -opMode.gamepad1.left_stick_y;
+        return -opMode.gamepad1.left_stick_y * stickGains[0];
     }
 
     public double getLateralDriveSpeed() {
-        return -opMode.gamepad1.left_stick_x;
+        return -opMode.gamepad1.left_stick_x * stickGains[1];
+    }
+
+    public double getTurningAmount() {
+        return -opMode.gamepad1.right_stick_x * stickGains[2];
     }
 
     /* Mimics auto API for auto-in-teleop programming */
