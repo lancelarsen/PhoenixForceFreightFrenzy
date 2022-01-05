@@ -11,9 +11,10 @@ import org.firstinspires.ftc.teamcode.drive.roadrunnerUtils.Encoder;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="EncoderTest", group="1")
 public class EncoderTest extends LinearOpMode {
-    private Encoder centerEncoder;
-    private Encoder leftEncoder;
-    private Encoder rightEncoder;
+    private Encoder leftFront;
+    private Encoder leftRear;
+    private Encoder rightFront;
+    private Encoder rightRear;
 
     @Override
     public void runOpMode() {
@@ -21,23 +22,23 @@ public class EncoderTest extends LinearOpMode {
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        centerEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "rf"));
-        centerEncoder.setDirection(Encoder.Direction.REVERSE);
-        leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "frontIntakeRoller"));
-        leftEncoder.setDirection(Encoder.Direction.REVERSE);
-        rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "tankDrive"));
-        rightEncoder.setDirection(Encoder.Direction.REVERSE);
+        leftFront = new Encoder(hardwareMap.get(DcMotorEx.class, "lf"));
+        leftRear = new Encoder(hardwareMap.get(DcMotorEx.class, "lr"));
+        rightFront = new Encoder(hardwareMap.get(DcMotorEx.class, "rf"));
+        rightRear = new Encoder(hardwareMap.get(DcMotorEx.class, "rr"));
 
         waitForStart();
         
-        long initCenter = centerEncoder.getCurrentPosition();
-        long initLeft = leftEncoder.getCurrentPosition();
-        long initRight = rightEncoder.getCurrentPosition();
+        long initLeftFront = leftFront.getCurrentPosition();
+        long initLeftRear = leftRear.getCurrentPosition();
+        long initRightFront = rightFront.getCurrentPosition();
+        long initRightRear = rightRear.getCurrentPosition();
 
         while (opModeIsActive()) {
-            telemetry.addData("centerEncoder", centerEncoder.getCurrentPosition() - initCenter);
-            telemetry.addData("leftEncoder", leftEncoder.getCurrentPosition() - initLeft);
-            telemetry.addData("rightEncoder", rightEncoder.getCurrentPosition() - initRight);
+            telemetry.addData("leftFront", leftFront.getCurrentPosition() - initLeftFront);
+            telemetry.addData("leftRear", leftRear.getCurrentPosition() - initLeftRear);
+            telemetry.addData("rightFront", rightFront.getCurrentPosition() - initRightFront);
+            telemetry.addData("rightRear", rightRear.getCurrentPosition() - initRightRear);
             telemetry.update();
 
             drive.setWeightedDrivePower(

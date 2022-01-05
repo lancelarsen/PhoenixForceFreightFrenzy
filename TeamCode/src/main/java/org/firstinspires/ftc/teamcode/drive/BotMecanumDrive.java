@@ -33,8 +33,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 
 import org.firstinspires.ftc.teamcode.drive.roadrunnerUtils.DashboardUtil;
+import org.firstinspires.ftc.teamcode.drive.roadrunnerUtils.BNO055IMUUtil;
+import org.firstinspires.ftc.teamcode.drive.roadrunnerUtils.AxesSigns;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,8 +66,8 @@ public class BotMecanumDrive extends MecanumDrive {
 
     //public static double LATERAL_MULTIPLIER = 2;
 
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(10, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(10, 0, 0);
 
     public static double LATERAL_MULTIPLIER = 1;
 
@@ -138,15 +141,14 @@ public class BotMecanumDrive extends MecanumDrive {
         }
 
         //--- Not needed with 3 wheel dead wheel odometry
-        // TODO: adjust the names of the following hardware devices to match your configuration
-//        imu = hardwareMap.get(BNO055IMU.class, "imu");
-//        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-//        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
-//        imu.initialize(parameters);
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+        imu.initialize(parameters);
 
         // TODO: if your hub is mounted vertically, remap the IMU axes so that the z-axis points
         // upward (normal to the floor) using a command like the following:
-        // BNO055IMUUtil.remapAxes(imu, AxesOrder.XYZ, AxesSigns.NPN);
+        BNO055IMUUtil.remapAxes(imu, AxesOrder.XYZ, AxesSigns.NPN);
 
         leftFront = hardwareMap.get(DcMotorEx.class, "lf");
         leftRear = hardwareMap.get(DcMotorEx.class, "lr");
@@ -178,7 +180,7 @@ public class BotMecanumDrive extends MecanumDrive {
         rightRear.setDirection(DcMotor.Direction.FORWARD);
 
         // TODO: if desired, use setLocalizer() to change the localization method
-        setLocalizer(new TrackingWheelLocalizer(hardwareMap));
+        //setLocalizer(new TrackingWheelLocalizer(hardwareMap));
     }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
@@ -413,9 +415,8 @@ public class BotMecanumDrive extends MecanumDrive {
 
     @Override
     public double getRawExternalHeading() {
-        //--- Not needed with 3 wheel dead wheel odometry, so return 0
-        //return imu.getAngularOrientation().firstAngle;
-        return 0;
+        return imu.getAngularOrientation().firstAngle;
+        //return 0;
     }
 
     @Override
@@ -438,7 +439,7 @@ public class BotMecanumDrive extends MecanumDrive {
         // Rotate about the z axis is the default assuming your REV Hub/Control Hub is laying
         // flat on a surface
 
-        return (double) imu.getAngularVelocity().zRotationRate;
+        return (double) imu.getAngularVelocity().xRotationRate;
     }
 
     public void cancelFollowing() {

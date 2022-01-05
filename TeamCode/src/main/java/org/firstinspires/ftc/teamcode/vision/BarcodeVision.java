@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class RingVision {
+public class BarcodeVision {
 
     private class DetectionRegion {
         private Point topLeft;
@@ -68,7 +68,7 @@ public class RingVision {
 
     private DetectionRegion detectionRegions[] = new DetectionRegion[3];
 
-    public RingVision(HardwareMap hardwareMap) {
+    public BarcodeVision(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
     }
 
@@ -204,7 +204,7 @@ public class RingVision {
         return pipeline.colorLevel;
     }
 
-    public RingCount getColorLevelIndex() {
+    public int getColorLevelIndex() {
         return pipeline.colorLevelIndex;
     }
 }

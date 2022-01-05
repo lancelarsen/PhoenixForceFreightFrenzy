@@ -7,12 +7,12 @@ import org.firstinspires.ftc.teamcode.GameConstants;
 import org.firstinspires.ftc.teamcode.appendages.AppendagesAutonomous;
 import org.firstinspires.ftc.teamcode.appendages.BlinkinPatterns;
 import org.firstinspires.ftc.teamcode.drive.MecanumAutonomous;
-import org.firstinspires.ftc.teamcode.vision.RingVision;
+import org.firstinspires.ftc.teamcode.vision.BarcodeVision;
 
 abstract public class AbstractAuto extends LinearOpMode {
     public MecanumAutonomous drive;
     public volatile AppendagesAutonomous appendages;
-    public volatile RingVision ringVision;
+    public volatile BarcodeVision barcodeVision;
 
     private static final long POWERSHOT_SHOOT_DELAY = 500;
     private static final long POWERSHOT_MOVE_DELAY = 500;
@@ -29,11 +29,11 @@ abstract public class AbstractAuto extends LinearOpMode {
     public void initAuto(AutoUtils.Alliance alliance, AutoUtils.StartingPosition startingPosition) {
         drive = new MecanumAutonomous(this);
         appendages = new AppendagesAutonomous(this);
-        //ringVision = new RingVision(hardwareMap);
+        //barcodeVision = new BarcodeVision(hardwareMap);
 
         drive.setSpeed(MecanumAutonomous.Speed.FAST);
 
-        //ringVision.init(alliance, startingPosition);
+        //barcodeVision.init(alliance, startingPosition);
 
         RevBlinkinLedDriver.BlinkinPattern basePattern;
 
@@ -53,24 +53,24 @@ abstract public class AbstractAuto extends LinearOpMode {
             basePattern = BlinkinPatterns.RED_BASE_PATTERN;
         }
 
-        updatePregameLights(basePattern);
+        //updatePregameLights(basePattern);
 
         if (isStopRequested()) return;
 
-        //ringVision.setViewportPaused(true);
+        //barcodeVision.setViewportPaused(true);
         //appendages.setBlinkinPattern(basePattern);
 
         //appendages.updateLights(alliance);
     }
 
     // Runs till opmode start
-    private void updatePregameLights(RevBlinkinLedDriver.BlinkinPattern basePattern) {
+    /*private void updatePregameLights(RevBlinkinLedDriver.BlinkinPattern basePattern) {
         Runnable lightTask = () -> {
             while (!Thread.interrupted()) {
                 flashLights(basePattern, FlashLength.LONG);
 
                 int ringCount;
-                switch (ringVision.getRingCount()) {
+                switch (barcodeVision.getRingCount()) {
                     case ONE:
                         ringCount = 1;
                         break;
@@ -93,7 +93,7 @@ abstract public class AbstractAuto extends LinearOpMode {
 
         while (!isStarted());
         lightThread.interrupt();
-    }
+    }*/
 
     private void flashLights(RevBlinkinLedDriver.BlinkinPattern pattern, FlashLength length) {
         //appendages.setBlinkinPattern(pattern);
