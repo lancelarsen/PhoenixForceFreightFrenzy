@@ -73,8 +73,8 @@ public class DriveConstants {
     //--- Max Velocity = (Max RPM / 60) * gear ration * wheel radius * 2 pi
     //--- (435 RPM / 60) * 1 * 1.88976 in * 2 pi = 86, 80% of max is recommended = ~68
     //--- MaxVelocityTuner opmode says MAX_VEL = 70 and Voltage Compensated kF is 15.45
-    public static double MAX_VEL = 30; //--- (was 70)
-    public static double MAX_ACCEL = 30;
+    public static double MAX_VEL = 70; //--- (was 30)
+    public static double MAX_ACCEL = 70; //--- (was 30)
     //--- Calculated with MaxAngularVelocityTuner opmode
     public static double MAX_ANG_VEL = 7.16; // (was Math.toRadians(60);)
     public static double MAX_ANG_ACCEL = Math.toRadians(60);

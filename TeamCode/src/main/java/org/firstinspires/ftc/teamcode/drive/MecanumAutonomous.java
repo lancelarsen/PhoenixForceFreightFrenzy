@@ -162,7 +162,7 @@ public class MecanumAutonomous extends BotMecanumDrive {
     }
 
     public void backupOnWall() {
+        //this.setMotorPowers(-0.5, -0.5, -0.5, -0.5);
         this.setMotorPowers(-0.5, -0.5, -0.5, -0.5);
-        //sleep(1000); //TODO: ??
     }
 }

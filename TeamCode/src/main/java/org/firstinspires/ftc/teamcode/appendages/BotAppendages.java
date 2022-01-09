@@ -29,12 +29,6 @@ public class BotAppendages {
         HOLD
     }
 
-    public static enum GondolaExtakeDirection {
-        FORWARD,
-        REVERSE,
-        OFF    
-    }
-
     public final static double TRIGGER_PRESSED_THRESH = 0.5;
     public final static double JOYSTICK_ACTIVE_THRESHOLD = 0.4;
     public final static double JOYSTICK_DEAD_ZONE = 0.05;
@@ -50,11 +44,10 @@ public class BotAppendages {
     public static final double DUCK_WHEEL_SPEED = -1.0;
 
     public static final double GONDOLA_LIFTER_DOWN_POSITION = 0;
-    public static final double GONDOLA_LIFTER_UP_POSITION = 63;
-    public static final double GONDOLA_LIFTER_SPEED = 0.5;
-    public static final double GONDOLA_PLUNGER_RETRACTED_POSITION = 0.65;
-    public static final double GONDOLA_PLUNGER_EXTENDED_POSITION = 0.2;
-    public static final double GONDOLA_CONVEYOR_SPEED = -1.0;
+    public static final double GONDOLA_LIFTER_UP_POSITION = 110;
+    public static final double GONDOLA_LIFTER_SPEED = 1.0;
+    public static final double GONDOLA_DEPLOYER_CLOSED_POSITION = 0.5;
+    public static final double GONDOLA_DEPLOYER_OPEN_POSITION = 0.1;
 
     public final RevBlinkinLedDriver blinkin;
     public RevBlinkinLedDriver.BlinkinPattern blinkinPattern;
@@ -70,8 +63,7 @@ public class BotAppendages {
     public final CRServo rightDuckWheel;
 
     public final DcMotorEx gondolaLifter;
-    public final Servo gondolaPlunger;
-    public final CRServo gondolaConveyor;
+    public final Servo gondolaDeployer;
 
     public BotAppendages(HardwareMap hardwareMap) {
         blinkin = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
@@ -90,8 +82,8 @@ public class BotAppendages {
         rightDuckWheel = hardwareMap.get(CRServo.class, "rightDuckWheel");
 
         gondolaLifter = hardwareMap.get(DcMotorEx.class, "gondolaLifter");
-        gondolaPlunger = hardwareMap.get(Servo.class, "gondolaPlunger");
-        gondolaConveyor = hardwareMap.get(CRServo.class, "gondolaConveyor");
+        gondolaLifter.setDirection(DcMotor.Direction.REVERSE);
+        gondolaDeployer = hardwareMap.get(Servo.class, "gondolaDeployer");
 
         gondolaLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         gondolaLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -147,26 +139,89 @@ public class BotAppendages {
             direction = GondolaLiftDirection.HOLD;
 
         double speed = GONDOLA_LIFTER_SPEED;
-        if (direction == GondolaLiftDirection.RETRACT) 
+        if (direction == GondolaLiftDirection.RETRACT)
             speed *= -1;
-        if (direction == GondolaLiftDirection.HOLD) 
+        if (direction == GondolaLiftDirection.HOLD)
             speed = 0;
 
         gondolaLifter.setPower(speed);
     }
 
-    public void runGondolaExtake(GondolaExtakeDirection direction) {
-        if (direction == GondolaExtakeDirection.FORWARD) {
-            gondolaPlunger.setPosition(GONDOLA_PLUNGER_EXTENDED_POSITION);
+    public void extakeGondola(boolean extake) {
+        if (extake) {
+            gondolaDeployer.setPosition(GONDOLA_DEPLOYER_OPEN_POSITION);
         } else {
-            gondolaPlunger.setPosition(GONDOLA_PLUNGER_RETRACTED_POSITION);
+            gondolaDeployer.setPosition(GONDOLA_DEPLOYER_CLOSED_POSITION);
+        }
+    }
+
+    // --- TODO: Max Review
+    // ------------------------------------------------------------
+    public void intakeBlocks(boolean reverse) {
+        double speed = INTAKE_ROLLER_SPEED;
+        if (reverse) {
+            speed *= -1;
         }
 
-        double speed = GONDOLA_CONVEYOR_SPEED;
-        if (direction == GondolaExtakeDirection.REVERSE)
-            speed *= -1;
-        if (direction == GondolaExtakeDirection.OFF) 
-            speed = 0;
-        gondolaConveyor.setPower(speed);
+        setIntakeSpeed(speed);
     }
+
+    public void intakeBlocksStart() {
+        intakeBlocks(false);
+    }
+
+    public void intakeBlocksReverse() {
+        intakeBlocks(true);
+    }
+
+    public void intakeBlocksStop() {
+        setIntakeSpeed(0);
+    }
+
+    private void setIntakeSpeed(double speed) {
+        setFrontIntakeSpeed(-speed);
+        setRearIntakeSpeed(speed);
+    }
+
+    public void gondalaHigh() {
+        double position = EncoderUtil.inchesToTicks(EncoderUtil.Motor.GOBILDA_5202, GONDOLA_LIFTER_UP_POSITION);
+        setGondalaPosition(position);
+    }
+
+    public void gondalaMiddle() {
+        double position = 1000;
+        setGondalaPosition(position);
+    }
+
+    public void gondalaLow() {
+        double position = 500;
+        setGondalaPosition(position);
+    }
+
+    public void gondalaDown() {
+        double position = EncoderUtil.inchesToTicks(EncoderUtil.Motor.GOBILDA_5202, GONDOLA_LIFTER_DOWN_POSITION);
+        setGondalaPosition(position);
+    }
+
+    public void setGondalaPosition(double position) {
+        int maxPos = EncoderUtil.inchesToTicks(EncoderUtil.Motor.GOBILDA_5202, GONDOLA_LIFTER_UP_POSITION);
+        int minPos = EncoderUtil.inchesToTicks(EncoderUtil.Motor.GOBILDA_5202, GONDOLA_LIFTER_DOWN_POSITION);
+
+        if (position > maxPos)
+            position = maxPos;
+        if (position < minPos)
+            position = minPos;
+
+        gondolaLifter.setTargetPosition((int) position);
+        gondolaLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        gondolaLifter.setPower(1.0);
+    }
+
+    public void extakeGondola() {
+        gondolaDeployer.setPosition(GONDOLA_DEPLOYER_OPEN_POSITION);
+        sleep(1000);
+        gondolaDeployer.setPosition(GONDOLA_DEPLOYER_CLOSED_POSITION);
+    }
+
+    // ------------------------------------------------------------
 }

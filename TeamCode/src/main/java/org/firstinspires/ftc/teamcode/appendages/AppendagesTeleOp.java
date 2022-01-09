@@ -139,13 +139,6 @@ public class AppendagesTeleOp extends BotAppendages {
             }
         }
 
-
-        GondolaExtakeDirection gondolaDirection = GondolaExtakeDirection.OFF;
-        if (opMode.gamepad2.x) {
-            gondolaDirection = GondolaExtakeDirection.REVERSE;
-        } else if (opMode.gamepad2.y) {
-            gondolaDirection = GondolaExtakeDirection.FORWARD;
-        }
-        runGondolaExtake(gondolaDirection);
+        extakeGondola(opMode.gamepad2.x);
     }
 }

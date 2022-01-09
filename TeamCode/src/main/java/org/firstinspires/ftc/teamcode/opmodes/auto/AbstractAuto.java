@@ -53,7 +53,7 @@ abstract public class AbstractAuto extends LinearOpMode {
             basePattern = BlinkinPatterns.RED_BASE_PATTERN;
         }
 
-        //updatePregameLights(basePattern);
+        updatePregameLights(basePattern);
 
         if (isStopRequested()) return;
 
@@ -64,13 +64,13 @@ abstract public class AbstractAuto extends LinearOpMode {
     }
 
     // Runs till opmode start
-    /*private void updatePregameLights(RevBlinkinLedDriver.BlinkinPattern basePattern) {
+    private void updatePregameLights(RevBlinkinLedDriver.BlinkinPattern basePattern) {
         Runnable lightTask = () -> {
             while (!Thread.interrupted()) {
                 flashLights(basePattern, FlashLength.LONG);
 
                 int ringCount;
-                switch (barcodeVision.getRingCount()) {
+                /*switch (barcodeVision.getRingCount()) {
                     case ONE:
                         ringCount = 1;
                         break;
@@ -83,8 +83,8 @@ abstract public class AbstractAuto extends LinearOpMode {
                 }
 
                 for (int i = 0; i < ringCount; i++) {
-                    //flashLights(BlinkinPatterns.RING_PATTERN, FlashLength.SHORT);
-                }
+                    flashLights(BlinkinPatterns.RING_PATTERN, FlashLength.SHORT);
+                }*/
             }
         };
 
@@ -93,7 +93,7 @@ abstract public class AbstractAuto extends LinearOpMode {
 
         while (!isStarted());
         lightThread.interrupt();
-    }*/
+    }
 
     private void flashLights(RevBlinkinLedDriver.BlinkinPattern pattern, FlashLength length) {
         //appendages.setBlinkinPattern(pattern);

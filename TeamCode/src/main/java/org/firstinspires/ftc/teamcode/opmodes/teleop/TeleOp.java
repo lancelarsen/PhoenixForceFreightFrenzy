@@ -65,7 +65,7 @@ public class TeleOp {
         drive.enableTurning(true);
 
         if (alliance == AutoUtils.Alliance.RED)
-            drive.setStickGains(-1);
+            drive.setStickGains(-1, -1, 1);
     }
 
     public void run() {
