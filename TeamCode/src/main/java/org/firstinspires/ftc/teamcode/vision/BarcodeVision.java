@@ -26,16 +26,15 @@ public class BarcodeVision {
         private Point bottomRight;
 
         public DetectionRegion(
-            int topLeftX,
-            int topLeftY,
-            int bottomRightX,
-            int bottomRightY
-        ) {
+                int topLeftX,
+                int topLeftY,
+                int width,
+                int height) {
             topLeft = new Point(topLeftX, topLeftY);
-            bottomRight = new Point(bottomRightX, bottomRightY);
+            bottomRight = new Point(topLeftX + width, topLeftY + height);
         }
 
-        public void drawDetectionPreview(Mat input) {
+        public void drawDetectionPreview(Mat input, int regionIndex) {
             // Draw box
             Imgproc.rectangle(
                     input, // Buffer to draw on
@@ -43,6 +42,8 @@ public class BarcodeVision {
                     bottomRight, // Second point which defines the rectangle
                     BLUE, // The color the rectangle is drawn in
                     2); // Thickness of the rectangle lines
+
+            Imgproc.putText(input, String.valueOf(regionIndex), new Point(topLeft.x, topLeft.y - 5), 1, 1.5, BLUE, 2);
         }
 
         public int getColorLevel(Mat Cb) {
@@ -56,8 +57,13 @@ public class BarcodeVision {
     private OpenCvCamera webcam;
     private RingVisionPipeline pipeline;
 
-    public enum RingCount { FOUR, ONE, ZERO }
-    public enum TargetZone { ZONE_A, ZONE_B, ZONE_C }
+    public enum RingCount {
+        FOUR, ONE, ZERO
+    }
+
+    public enum TargetZone {
+        ZONE_A, ZONE_B, ZONE_C
+    }
 
     private static final Scalar BLUE = new Scalar(0, 0, 255);
     private static final Scalar GREEN = new Scalar(0, 255, 0);
@@ -76,45 +82,53 @@ public class BarcodeVision {
         this.alliance = alliance;
         this.startingPosition = startingPosition;
 
-        int cameraMonitorViewId = 
-            hardwareMap.appContext.getResources()
-            .getIdentifier(
-                "cameraMonitorViewId", 
-                "id", 
-                hardwareMap.appContext.getPackageName());
+        int cameraMonitorViewId = hardwareMap.appContext.getResources()
+                .getIdentifier(
+                        "cameraMonitorViewId",
+                        "id",
+                        hardwareMap.appContext.getPackageName());
 
-        webcam = 
-            OpenCvCameraFactory.getInstance()
-            .createWebcam(
-                hardwareMap.get(WebcamName.class, "Webcam 1"), 
-                cameraMonitorViewId);
+        webcam = OpenCvCameraFactory.getInstance()
+                .createWebcam(
+                        hardwareMap.get(WebcamName.class, "Webcam 1"),
+                        cameraMonitorViewId);
 
         pipeline = new RingVisionPipeline();
         webcam.setPipeline(pipeline);
-        webcam.openCameraDeviceAsync(() ->
-                webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT)
-        );
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+            }
 
-        //--- Red - Right Starting (Far Right of Line)
+            @Override
+            public void onError(int errorCode) {
+                /*
+                 * This will be called if the camera could not be opened
+                 */
+            }
+        });
+
+        // --- Red - Ouside (toward wall)
         if (alliance == AutoUtils.Alliance.RED && startingPosition == AutoUtils.StartingPosition.OUTSIDE) {
             detectionRegions[0] = new DetectionRegion(0, 0, 0, 0);
             detectionRegions[1] = new DetectionRegion(0, 0, 0, 0);
             detectionRegions[2] = new DetectionRegion(0, 0, 0, 0);
 
-        //--- Red - Left Starting (Far Left of Line)
+            // --- Red - Inside (toward barrier)
         } else if (alliance == AutoUtils.Alliance.RED && startingPosition == AutoUtils.StartingPosition.INSIDE) {
             detectionRegions[0] = new DetectionRegion(0, 0, 0, 0);
             detectionRegions[1] = new DetectionRegion(0, 0, 0, 0);
             detectionRegions[2] = new DetectionRegion(0, 0, 0, 0);
 
-        //--- Blue - Right Starting (Far Right of Line)
-        } else if (alliance == AutoUtils.Alliance.BLUE && startingPosition == AutoUtils.StartingPosition.INSIDE) {
-            detectionRegions[0] = new DetectionRegion(0, 0, 0, 0);
-            detectionRegions[1] = new DetectionRegion(0, 0, 0, 0);
-            detectionRegions[2] = new DetectionRegion(0, 0, 0, 0);
-
-        //--- Blue - Left Starting (Center of Line)
+            // --- Blue - Outside (toward wall)
         } else if (alliance == AutoUtils.Alliance.BLUE && startingPosition == AutoUtils.StartingPosition.OUTSIDE) {
+            detectionRegions[0] = new DetectionRegion(0, 40, 60, 80);
+            detectionRegions[1] = new DetectionRegion(100, 40, 60, 80);
+            detectionRegions[2] = new DetectionRegion(220, 40, 60, 80);
+
+            // --- Blue - Inside (toward barrier)
+        } else if (alliance == AutoUtils.Alliance.BLUE && startingPosition == AutoUtils.StartingPosition.INSIDE) {
             detectionRegions[0] = new DetectionRegion(0, 0, 0, 0);
             detectionRegions[1] = new DetectionRegion(0, 0, 0, 0);
             detectionRegions[2] = new DetectionRegion(0, 0, 0, 0);
@@ -130,11 +144,12 @@ public class BarcodeVision {
         boolean viewportPaused;
 
         int colorLevel;
-        int colorLevelIndex;
+        int capstoneIndex;
 
-        //----------------------------------------------------------------------
-        //--- Takes the RGB, converts to YCrCb, and extracts the Cb channel to the 'Cb' variable
-        //----------------------------------------------------------------------
+        // ----------------------------------------------------------------------
+        // --- Takes the RGB, converts to YCrCb, and extracts the Cb channel to the 'Cb'
+        // variable
+        // ----------------------------------------------------------------------
         void inputToCb(Mat input) {
             Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
             Core.extractChannel(YCrCb, Cb, 1);
@@ -147,11 +162,12 @@ public class BarcodeVision {
 
         void drawDetectionInfo(Mat input) {
 
-            Imgproc.putText(input, colorLevelIndex + " RINGS", new Point(75, 190), 1, 2, RED, 2);
-            Imgproc.putText(input, String.valueOf(colorLevel), new Point(135, 230), 1, 2, RED, 2);
+            String locationString = alliance.toString() + " ALLIANCE "
+                    + (startingPosition == startingPosition.OUTSIDE ? "OUT" : "IN");
 
-            Imgproc.putText(input, alliance.toString() + "ALLIANCE", new Point(5, 30), 1, 1.5, RED, 2);
-            Imgproc.putText(input, startingPosition.toString(), new Point(5, 60), 1, 1.5, RED, 2);
+            Imgproc.putText(input, locationString, new Point(5, 180), 1, 1.5, RED, 2);
+            Imgproc.putText(input, "INDEX: " + capstoneIndex, new Point(5, 205), 1, 1.5, RED, 2);
+            Imgproc.putText(input, "COLOR LVL: " + String.valueOf(colorLevel), new Point(5, 230), 1, 1.5, RED, 2);
         }
 
         @Override
@@ -159,14 +175,15 @@ public class BarcodeVision {
             // Calculate color level
             inputToCb(input);
 
+            colorLevel = 0;
             for (int i = 0; i < detectionRegions.length; i++) {
 
-                detectionRegions[i].drawDetectionPreview(input);
+                detectionRegions[i].drawDetectionPreview(input, i);
                 int newColorLevel = detectionRegions[i].getColorLevel(Cb);
 
                 if (newColorLevel > colorLevel) {
 
-                    colorLevelIndex = i;
+                    capstoneIndex = i;
                     colorLevel = newColorLevel;
                 }
             }
@@ -174,7 +191,7 @@ public class BarcodeVision {
             drawDetectionInfo(input);
 
             return input;
-        }        
+        }
 
         @Override
         public void onViewportTapped() {
@@ -184,7 +201,7 @@ public class BarcodeVision {
         public void setViewportPaused(boolean paused) {
             viewportPaused = paused;
 
-            if(viewportPaused) {
+            if (viewportPaused) {
                 webcam.pauseViewport();
             } else {
                 webcam.resumeViewport();
@@ -204,7 +221,7 @@ public class BarcodeVision {
         return pipeline.colorLevel;
     }
 
-    public int getColorLevelIndex() {
-        return pipeline.colorLevelIndex;
+    public int getCapstoneIndex() {
+        return pipeline.capstoneIndex;
     }
 }

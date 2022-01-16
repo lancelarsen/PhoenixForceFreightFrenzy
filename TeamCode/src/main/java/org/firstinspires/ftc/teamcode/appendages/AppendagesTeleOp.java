@@ -5,7 +5,6 @@ import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.GameConstants;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.teleop.util.ButtonToggle;
 import org.firstinspires.ftc.teamcode.opmodes.teleop.util.GamepadUtils;
@@ -56,7 +55,7 @@ public class AppendagesTeleOp extends BotAppendages {
                 } else {
                     setBlinkinPattern(BlinkinPatterns.RED_BASE_PATTERN);
                 }
-            }    
+            }
         }
     }
 
@@ -87,7 +86,7 @@ public class AppendagesTeleOp extends BotAppendages {
             opMode.telemetry.addData("tankDriveSpeed", speed);
             opMode.telemetry.update();
             setTankDriveSpeed(speed);
-            
+
             isTankDriveEnabled = false;
         } else if (isTankDriveEnabled) {
             setTankDriveSpeed(forwardDriveSpeed);

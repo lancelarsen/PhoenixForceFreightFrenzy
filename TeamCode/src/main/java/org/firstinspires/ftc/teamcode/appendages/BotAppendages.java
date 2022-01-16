@@ -14,7 +14,6 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.GameConstants;
 import org.firstinspires.ftc.teamcode.appendages.utils.EncoderUtil;
 import org.firstinspires.ftc.teamcode.appendages.utils.MapUtil;
 import org.firstinspires.ftc.teamcode.appendages.utils.MovingAverage;
@@ -155,54 +154,6 @@ public class BotAppendages {
         }
     }
 
-    // --- TODO: Max Review
-    // ------------------------------------------------------------
-    public void intakeBlocks(boolean reverse) {
-        double speed = INTAKE_ROLLER_SPEED;
-        if (reverse) {
-            speed *= -1;
-        }
-
-        setIntakeSpeed(speed);
-    }
-
-    public void intakeBlocksStart() {
-        intakeBlocks(false);
-    }
-
-    public void intakeBlocksReverse() {
-        intakeBlocks(true);
-    }
-
-    public void intakeBlocksStop() {
-        setIntakeSpeed(0);
-    }
-
-    private void setIntakeSpeed(double speed) {
-        setFrontIntakeSpeed(-speed);
-        setRearIntakeSpeed(speed);
-    }
-
-    public void gondalaHigh() {
-        double position = EncoderUtil.inchesToTicks(EncoderUtil.Motor.GOBILDA_5202, GONDOLA_LIFTER_UP_POSITION);
-        setGondalaPosition(position);
-    }
-
-    public void gondalaMiddle() {
-        double position = 1000;
-        setGondalaPosition(position);
-    }
-
-    public void gondalaLow() {
-        double position = 500;
-        setGondalaPosition(position);
-    }
-
-    public void gondalaDown() {
-        double position = EncoderUtil.inchesToTicks(EncoderUtil.Motor.GOBILDA_5202, GONDOLA_LIFTER_DOWN_POSITION);
-        setGondalaPosition(position);
-    }
-
     public void setGondalaPosition(double position) {
         int maxPos = EncoderUtil.inchesToTicks(EncoderUtil.Motor.GOBILDA_5202, GONDOLA_LIFTER_UP_POSITION);
         int minPos = EncoderUtil.inchesToTicks(EncoderUtil.Motor.GOBILDA_5202, GONDOLA_LIFTER_DOWN_POSITION);
@@ -216,12 +167,4 @@ public class BotAppendages {
         gondolaLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         gondolaLifter.setPower(1.0);
     }
-
-    public void extakeGondola() {
-        gondolaDeployer.setPosition(GONDOLA_DEPLOYER_OPEN_POSITION);
-        sleep(1000);
-        gondolaDeployer.setPosition(GONDOLA_DEPLOYER_CLOSED_POSITION);
-    }
-
-    // ------------------------------------------------------------
 }

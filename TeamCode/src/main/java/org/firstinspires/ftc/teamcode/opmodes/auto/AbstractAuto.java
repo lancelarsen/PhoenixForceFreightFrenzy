@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.opmodes.auto;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.GameConstants;
 import org.firstinspires.ftc.teamcode.appendages.AppendagesAutonomous;
 import org.firstinspires.ftc.teamcode.appendages.BlinkinPatterns;
 import org.firstinspires.ftc.teamcode.drive.MecanumAutonomous;
@@ -29,11 +28,11 @@ abstract public class AbstractAuto extends LinearOpMode {
     public void initAuto(AutoUtils.Alliance alliance, AutoUtils.StartingPosition startingPosition) {
         drive = new MecanumAutonomous(this);
         appendages = new AppendagesAutonomous(this);
-        //barcodeVision = new BarcodeVision(hardwareMap);
+        // barcodeVision = new BarcodeVision(hardwareMap);
 
         drive.setSpeed(MecanumAutonomous.Speed.FAST);
 
-        //barcodeVision.init(alliance, startingPosition);
+        // barcodeVision.init(alliance, startingPosition);
 
         RevBlinkinLedDriver.BlinkinPattern basePattern;
 
@@ -55,12 +54,13 @@ abstract public class AbstractAuto extends LinearOpMode {
 
         updatePregameLights(basePattern);
 
-        if (isStopRequested()) return;
+        if (isStopRequested())
+            return;
 
-        //barcodeVision.setViewportPaused(true);
-        //appendages.setBlinkinPattern(basePattern);
+        // barcodeVision.setViewportPaused(true);
+        // appendages.setBlinkinPattern(basePattern);
 
-        //appendages.updateLights(alliance);
+        // appendages.updateLights(alliance);
     }
 
     // Runs till opmode start
@@ -70,35 +70,38 @@ abstract public class AbstractAuto extends LinearOpMode {
                 flashLights(basePattern, FlashLength.LONG);
 
                 int ringCount;
-                /*switch (barcodeVision.getRingCount()) {
-                    case ONE:
-                        ringCount = 1;
-                        break;
-                    case FOUR:
-                        ringCount = 4;
-                        break;
-                    default:
-                        ringCount = 0;
-                        break;
-                }
-
-                for (int i = 0; i < ringCount; i++) {
-                    flashLights(BlinkinPatterns.RING_PATTERN, FlashLength.SHORT);
-                }*/
+                /*
+                 * switch (barcodeVision.getRingCount()) {
+                 * case ONE:
+                 * ringCount = 1;
+                 * break;
+                 * case FOUR:
+                 * ringCount = 4;
+                 * break;
+                 * default:
+                 * ringCount = 0;
+                 * break;
+                 * }
+                 * 
+                 * for (int i = 0; i < ringCount; i++) {
+                 * flashLights(BlinkinPatterns.RING_PATTERN, FlashLength.SHORT);
+                 * }
+                 */
             }
         };
 
         Thread lightThread = new Thread(lightTask);
         lightThread.start();
 
-        while (!isStarted());
+        while (!isStarted())
+            ;
         lightThread.interrupt();
     }
 
     private void flashLights(RevBlinkinLedDriver.BlinkinPattern pattern, FlashLength length) {
-        //appendages.setBlinkinPattern(pattern);
+        // appendages.setBlinkinPattern(pattern);
         sleep(length == FlashLength.LONG ? LIGHT_LONG_FLASH_ON_TIME : LIGHT_SHORT_FLASH_ON_TIME);
-        //appendages.setBlinkinPattern(BlinkinPatterns.OFF);
+        // appendages.setBlinkinPattern(BlinkinPatterns.OFF);
         sleep(LIGHT_FLASH_OFF_TIME);
     }
 }
