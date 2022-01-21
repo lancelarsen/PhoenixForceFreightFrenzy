@@ -57,14 +57,6 @@ public class BarcodeVision {
     private OpenCvCamera webcam;
     private RingVisionPipeline pipeline;
 
-    public enum RingCount {
-        FOUR, ONE, ZERO
-    }
-
-    public enum TargetZone {
-        ZONE_A, ZONE_B, ZONE_C
-    }
-
     private static final Scalar BLUE = new Scalar(0, 0, 255);
     private static final Scalar GREEN = new Scalar(0, 255, 0);
     private static final Scalar RED = new Scalar(255, 0, 0);
@@ -88,9 +80,17 @@ public class BarcodeVision {
                         "id",
                         hardwareMap.appContext.getPackageName());
 
+        String webcamName;
+        if (alliance == AutoUtils.Alliance.RED ^ startingPosition == AutoUtils.StartingPosition.INSIDE) {
+            webcamName = "frontWebcam";
+        } else {
+            webcamName = "rearWebcam";
+        }
+
         webcam = OpenCvCameraFactory.getInstance()
                 .createWebcam(
-                        hardwareMap.get(WebcamName.class, "Webcam 1"),
+                        hardwareMap.get(WebcamName.class,
+                                webcamName),
                         cameraMonitorViewId);
 
         pipeline = new RingVisionPipeline();
@@ -111,27 +111,27 @@ public class BarcodeVision {
 
         // --- Red - Ouside (toward wall)
         if (alliance == AutoUtils.Alliance.RED && startingPosition == AutoUtils.StartingPosition.OUTSIDE) {
-            detectionRegions[0] = new DetectionRegion(0, 0, 0, 0);
-            detectionRegions[1] = new DetectionRegion(0, 0, 0, 0);
-            detectionRegions[2] = new DetectionRegion(0, 0, 0, 0);
+            detectionRegions[0] = new DetectionRegion(40, 75, 60, 80);
+            detectionRegions[1] = new DetectionRegion(160, 75, 60, 80);
+            detectionRegions[2] = new DetectionRegion(260, 75, 60, 80);
 
             // --- Red - Inside (toward barrier)
         } else if (alliance == AutoUtils.Alliance.RED && startingPosition == AutoUtils.StartingPosition.INSIDE) {
-            detectionRegions[0] = new DetectionRegion(0, 0, 0, 0);
-            detectionRegions[1] = new DetectionRegion(0, 0, 0, 0);
-            detectionRegions[2] = new DetectionRegion(0, 0, 0, 0);
+            detectionRegions[0] = new DetectionRegion(0, 60, 60, 80);
+            detectionRegions[1] = new DetectionRegion(110, 60, 60, 80);
+            detectionRegions[2] = new DetectionRegion(240, 60, 60, 80);
 
             // --- Blue - Outside (toward wall)
         } else if (alliance == AutoUtils.Alliance.BLUE && startingPosition == AutoUtils.StartingPosition.OUTSIDE) {
             detectionRegions[0] = new DetectionRegion(0, 40, 60, 80);
-            detectionRegions[1] = new DetectionRegion(100, 40, 60, 80);
-            detectionRegions[2] = new DetectionRegion(220, 40, 60, 80);
+            detectionRegions[1] = new DetectionRegion(110, 40, 60, 80);
+            detectionRegions[2] = new DetectionRegion(240, 40, 60, 80);
 
             // --- Blue - Inside (toward barrier)
         } else if (alliance == AutoUtils.Alliance.BLUE && startingPosition == AutoUtils.StartingPosition.INSIDE) {
-            detectionRegions[0] = new DetectionRegion(0, 0, 0, 0);
-            detectionRegions[1] = new DetectionRegion(0, 0, 0, 0);
-            detectionRegions[2] = new DetectionRegion(0, 0, 0, 0);
+            detectionRegions[0] = new DetectionRegion(0, 75, 60, 80);
+            detectionRegions[1] = new DetectionRegion(110, 75, 60, 80);
+            detectionRegions[2] = new DetectionRegion(240, 75, 60, 80);
         }
 
         setViewportPaused(false);
@@ -178,12 +178,12 @@ public class BarcodeVision {
             colorLevel = 0;
             for (int i = 0; i < detectionRegions.length; i++) {
 
-                detectionRegions[i].drawDetectionPreview(input, i);
+                detectionRegions[i].drawDetectionPreview(input, i + 1);
                 int newColorLevel = detectionRegions[i].getColorLevel(Cb);
 
                 if (newColorLevel > colorLevel) {
 
-                    capstoneIndex = i;
+                    capstoneIndex = i + 1;
                     colorLevel = newColorLevel;
                 }
             }

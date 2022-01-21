@@ -3,17 +3,14 @@ package org.firstinspires.ftc.teamcode.opmodes.demo;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.vision.BarcodeVision;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
+import org.firstinspires.ftc.teamcode.opmodes.auto.AbstractAuto;
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "BarcodeVisionTest", group = "1")
-public class BarcodeVisionTest extends LinearOpMode {
-
-    private BarcodeVision vision;
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "RedOutVisionTest", group = "1")
+public class RedOutVisionTest extends AbstractAuto {
 
     @Override
     public void runOpMode() {
-
-        vision = new BarcodeVision(hardwareMap);
-        vision.init(AutoUtils.Alliance.BLUE, AutoUtils.StartingPosition.OUTSIDE);
+        initAuto(AutoUtils.Alliance.RED, AutoUtils.StartingPosition.OUTSIDE);
 
         waitForStart();
         while (!isStopRequested()) {

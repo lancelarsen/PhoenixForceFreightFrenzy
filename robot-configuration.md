@@ -33,3 +33,7 @@
 | 3    | *empty*              | *empty*              |
 | 4    | `leftDuckWheel`      | left duck wheel      |
 | 5    | `rearIntakeDeployer` | Rear intake deployer |
+
+## Webcams
+`DACE2A40`: rearWebcam
+`5BC0A160`: frontWebcam
