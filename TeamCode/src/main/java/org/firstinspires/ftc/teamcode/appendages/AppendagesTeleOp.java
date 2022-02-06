@@ -5,6 +5,7 @@ import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.teleop.util.ButtonToggle;
 import org.firstinspires.ftc.teamcode.opmodes.teleop.util.GamepadUtils;
@@ -23,6 +24,8 @@ public class AppendagesTeleOp extends BotAppendages {
     private DriveDirection lastDirectionDriven = DriveDirection.FORWARD;
 
     private boolean isTankDriveEnabled = false;
+
+    private ButtonToggle blockSensorOverride = new ButtonToggle();
 
     private ButtonToggle frontIntakeToggle = new ButtonToggle();
     private ButtonToggle rearIntakeToggle = new ButtonToggle();
@@ -49,6 +52,10 @@ public class AppendagesTeleOp extends BotAppendages {
         } else {
             if (isTankDriveEnabled) {
                 setBlinkinPattern(BlinkinPatterns.TANK_DRIVE_ACTIVE_PATTERN);
+            } else if (blockSensorOverride.isActive()) {
+                setBlinkinPattern(BlinkinPatterns.BLOCK_SENSOR_DISABLED_PATTERN);
+            } else if (!canAcceptBlock()) {
+                setBlinkinPattern(BlinkinPatterns.BLOCK_IN_GONDOLA_PATTEN);
             } else {
                 if (alliance == AutoUtils.Alliance.BLUE) {
                     setBlinkinPattern(BlinkinPatterns.BLUE_BASE_PATTERN);
@@ -83,8 +90,6 @@ public class AppendagesTeleOp extends BotAppendages {
                 speed *= -1;
             }
 
-            opMode.telemetry.addData("tankDriveSpeed", speed);
-            opMode.telemetry.update();
             setTankDriveSpeed(speed);
 
             isTankDriveEnabled = false;
@@ -96,20 +101,30 @@ public class AppendagesTeleOp extends BotAppendages {
     }
 
     public void updateIntake() {
+        blockSensorOverride.update(opMode.gamepad1.right_trigger > TRIGGER_PRESSED_THRESH);
+
         frontIntakeToggle.update(opMode.gamepad2.b);
         rearIntakeToggle.update(opMode.gamepad2.a);
 
+        boolean canAcceptBlock = canAcceptBlock() || blockSensorOverride.isActive();
         double speed = INTAKE_ROLLER_SPEED;
+        if (!canAcceptBlock) {
+            speed *= -1;
+        }
         if (isIntakeReversed()) {
             speed *= -1;
         }
 
         setFrontIntakeSpeed(frontIntakeToggle.isActive() ? -speed : 0);
         setRearIntakeSpeed(rearIntakeToggle.isActive() ? speed : 0);
+
+        setFrontGateUp(!canAcceptBlock || !frontIntakeToggle.isActive());
+        setRearGateUp(!canAcceptBlock || !rearIntakeToggle.isActive());
     }
 
     private boolean isIntakeReversed() {
-        return opMode.gamepad2.left_trigger > TRIGGER_PRESSED_THRESH;
+        return opMode.gamepad2.left_trigger > TRIGGER_PRESSED_THRESH
+                || opMode.gamepad1.left_trigger > TRIGGER_PRESSED_THRESH;
     }
 
     public void updateDuckWheels() {
@@ -139,5 +154,11 @@ public class AppendagesTeleOp extends BotAppendages {
         }
 
         extakeGondola(opMode.gamepad2.x);
+
+        opMode.telemetry.addData("Block sensor distance", gondolaBockSensor.getDistance(DistanceUnit.CM));
+        opMode.telemetry.addData("Block sensor mean", getBlockMeanDistance());
+        opMode.telemetry.addData("Block in gondola", isBlockInGondola());
+        opMode.telemetry.addData("Can accept block", canAcceptBlock());
+        opMode.telemetry.update();
     }
 }

@@ -12,10 +12,10 @@ public class BlueInVisionTest extends AbstractAuto {
     public void runOpMode() {
         initAuto(AutoUtils.Alliance.BLUE, AutoUtils.StartingPosition.INSIDE);
 
-        waitForStart();
         while (!isStopRequested()) {
             telemetry.addData("Capstone index", vision.getCapstoneIndex());
             telemetry.addData("Color level", vision.getColorLevel());
+            telemetry.update();
         }
     }
 }

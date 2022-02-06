@@ -17,6 +17,14 @@ public class BLUE_WAREHOUSE extends AbstractAuto {
     public void runOpMode() {
         initAuto(AutoUtils.Alliance.BLUE, AutoUtils.StartingPosition.OUTSIDE);
 
+        // --- Read the barcode position
+        telemetry.addData("Capstone index", vision.getCapstoneIndex());
+        telemetry.addData("Color level", vision.getColorLevel());
+        int barcodePlace = vision.getCapstoneIndex();
+        if (barcodePlace == 0)
+            barcodePlace = 1; // --- Default if not detected
+
+        // --- Set our starting position
         drive.setSpeed(MecanumAutonomous.Speed.FAST);
         drive.setCurrentPosition(new Pose2d(19, 62, 0));
 

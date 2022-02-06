@@ -16,7 +16,6 @@ public class MovingAverage {
         sum += num;
         Dataset.add(num);
 
-
         if (Dataset.size() > period) {
             sum -= Dataset.remove();
         }
@@ -24,5 +23,9 @@ public class MovingAverage {
 
     public double getMean() {
         return sum / period;
+    }
+
+    public boolean isFull() {
+        return Dataset.size() == period;
     }
 }

@@ -54,8 +54,9 @@ public class BarcodeVision {
 
     private HardwareMap hardwareMap;
 
-    private OpenCvCamera webcam;
-    private RingVisionPipeline pipeline;
+    private String webcamName = "";
+    private volatile OpenCvCamera webcam;
+    private volatile RingVisionPipeline pipeline;
 
     private static final Scalar BLUE = new Scalar(0, 0, 255);
     private static final Scalar GREEN = new Scalar(0, 255, 0);
@@ -80,7 +81,6 @@ public class BarcodeVision {
                         "id",
                         hardwareMap.appContext.getPackageName());
 
-        String webcamName;
         if (alliance == AutoUtils.Alliance.RED ^ startingPosition == AutoUtils.StartingPosition.INSIDE) {
             webcamName = "frontWebcam";
         } else {
@@ -137,14 +137,19 @@ public class BarcodeVision {
         setViewportPaused(false);
     }
 
+    public String getCameraName() {
+        return webcamName;
+    }
+
     private class RingVisionPipeline extends OpenCvPipeline {
         Mat YCrCb = new Mat();
         Mat Cb = new Mat();
 
-        boolean viewportPaused;
+        boolean viewportPaused = false;
+        boolean detectionPaused = false;
 
-        int colorLevel;
-        int capstoneIndex;
+        volatile int colorLevel;
+        volatile int capstoneIndex;
 
         // ----------------------------------------------------------------------
         // --- Takes the RGB, converts to YCrCb, and extracts the Cb channel to the 'Cb'
@@ -172,6 +177,9 @@ public class BarcodeVision {
 
         @Override
         public Mat processFrame(Mat input) {
+            if (detectionPaused)
+                return input;
+
             // Calculate color level
             inputToCb(input);
 
@@ -207,6 +215,11 @@ public class BarcodeVision {
                 webcam.resumeViewport();
             }
         }
+
+        public void setDetectionPaused(boolean paused) {
+            setViewportPaused(paused);
+            detectionPaused = paused;
+        }
     }
 
     public void setViewportPaused(boolean paused) {
@@ -215,6 +228,14 @@ public class BarcodeVision {
 
     public boolean isViewportPaused() {
         return pipeline.viewportPaused;
+    }
+
+    public void setDetectionPaused(boolean paused) {
+        pipeline.setDetectionPaused(paused);
+    }
+
+    public boolean isDetectionPaused() {
+        return pipeline.detectionPaused;
     }
 
     public int getColorLevel() {

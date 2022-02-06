@@ -9,6 +9,8 @@ public class BlinkinPatterns {
     public final static RevBlinkinLedDriver.BlinkinPattern CAPSTONE_PATTERN = RevBlinkinLedDriver.BlinkinPattern.ORANGE;
 
     public final static RevBlinkinLedDriver.BlinkinPattern TANK_DRIVE_ACTIVE_PATTERN = RevBlinkinLedDriver.BlinkinPattern.ORANGE;
+    public final static RevBlinkinLedDriver.BlinkinPattern BLOCK_IN_GONDOLA_PATTEN = RevBlinkinLedDriver.BlinkinPattern.GREEN;
+    public final static RevBlinkinLedDriver.BlinkinPattern BLOCK_SENSOR_DISABLED_PATTERN = RevBlinkinLedDriver.BlinkinPattern.HEARTBEAT_WHITE;
 
     public final static RevBlinkinLedDriver.BlinkinPattern OFF = RevBlinkinLedDriver.BlinkinPattern.BLACK;
 }

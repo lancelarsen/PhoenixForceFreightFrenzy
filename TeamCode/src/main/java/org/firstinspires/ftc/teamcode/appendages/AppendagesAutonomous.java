@@ -10,6 +10,7 @@ import static org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils.sleep;
 
 public class AppendagesAutonomous extends BotAppendages {
     private LinearOpMode opMode;
+    private volatile double intakeSpeed = 0;
 
     public AppendagesAutonomous(LinearOpMode opMode) {
         super(opMode.hardwareMap);
@@ -38,8 +39,39 @@ public class AppendagesAutonomous extends BotAppendages {
     }
 
     private void setIntakeSpeed(double speed) {
+        intakeSpeed = speed;
+
         setFrontIntakeSpeed(-speed);
         setRearIntakeSpeed(speed);
+    }
+
+    public double getBlockDistance() {
+        return getBlockMeanDistance();
+    }
+
+    public void enableIntakeGates() {
+        Runnable gateTask = () -> {
+            while (!Thread.interrupted() && !opMode.isStopRequested()) {
+                boolean gateUp = !canAcceptBlock() || intakeSpeed == 0;
+
+                setFrontGateUp(gateUp);
+                setRearGateUp(gateUp);
+
+                if (gateUp && intakeSpeed > 0) {
+                    intakeBlocks(true);
+                } else if (!gateUp && intakeSpeed != 0) {
+                    intakeBlocks(false);
+                }
+
+                opMode.telemetry.addData("Can accept block", canAcceptBlock());
+                opMode.telemetry.addData("Gates up", gateUp);
+                opMode.telemetry.addData("Intake speed", intakeSpeed);
+                opMode.telemetry.update();
+            }
+        };
+
+        Thread gateThread = new Thread(gateTask);
+        gateThread.start();
     }
 
     public void gondalaHigh() {
@@ -48,23 +80,37 @@ public class AppendagesAutonomous extends BotAppendages {
     }
 
     public void gondalaMiddle() {
-        double position = 1000;
+        double position = 1250;
         setGondalaPosition(position);
     }
 
     public void gondalaLow() {
-        double position = 500;
+        double position = 300;
         setGondalaPosition(position);
     }
 
     public void gondalaDown() {
         double position = EncoderUtil.inchesToTicks(EncoderUtil.Motor.GOBILDA_5202, GONDOLA_LIFTER_DOWN_POSITION);
         setGondalaPosition(position);
+
+        // --- Manual down to make sure the gondola is fully down
+        gondolaLifter.setPower(-1);
+        sleep(250);
     }
 
     public void extakeGondola() {
         gondolaDeployer.setPosition(GONDOLA_DEPLOYER_OPEN_POSITION);
         sleep(1000);
         gondolaDeployer.setPosition(GONDOLA_DEPLOYER_CLOSED_POSITION);
+    }
+
+    public void setGatesUp() {
+        setFrontGateUp(true);
+        setRearGateUp(true);
+    }
+
+    public void setGatesDown() {
+        setFrontGateUp(false);
+        setRearGateUp(false);
     }
 }

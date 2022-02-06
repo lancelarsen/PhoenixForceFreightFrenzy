@@ -47,11 +47,10 @@ abstract public class AbstractAuto extends LinearOpMode {
         if (isStopRequested())
             return;
 
-        vision.setViewportPaused(true);
-        appendages.setBlinkinPattern(basePattern);
+        vision.setDetectionPaused(true);
 
-        // appendages.updateLights(alliance);
-        appendages.setBlinkinPattern(basePattern);
+        appendages.enableIntakeGates();
+        updateGameLights(basePattern);
     }
 
     // Runs till opmode start
@@ -64,6 +63,11 @@ abstract public class AbstractAuto extends LinearOpMode {
                 for (int i = 0; i < capstoneIndex; i++) {
                     flashLights(BlinkinPatterns.CAPSTONE_PATTERN, FlashLength.SHORT);
                 }
+
+                telemetry.addData("Camera name", vision.getCameraName());
+                telemetry.addData("Capstone index", vision.getCapstoneIndex());
+                telemetry.addData("Capstone color level", vision.getColorLevel());
+                telemetry.update();
             }
         };
 
@@ -73,6 +77,21 @@ abstract public class AbstractAuto extends LinearOpMode {
         while (!isStarted())
             ;
         lightThread.interrupt();
+    }
+
+    private void updateGameLights(RevBlinkinLedDriver.BlinkinPattern basePattern) {
+        Runnable lightTask = () -> {
+            while (!Thread.interrupted() && !isStopRequested()) {
+                if (appendages.canAcceptBlock()) {
+                    appendages.setBlinkinPattern(basePattern);
+                } else {
+                    appendages.setBlinkinPattern(BlinkinPatterns.BLOCK_IN_GONDOLA_PATTEN);
+                }
+            }
+        };
+
+        Thread lightThread = new Thread(lightTask);
+        lightThread.start();
     }
 
     private void flashLights(RevBlinkinLedDriver.BlinkinPattern pattern, FlashLength length) {
