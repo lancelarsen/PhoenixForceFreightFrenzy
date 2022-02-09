@@ -29,76 +29,72 @@ public class RED_WAREHOUSE extends AbstractAuto {
         drive.setCurrentPosition(new Pose2d(13, -62, Math.toRadians(180)));
 
         int backwall = -62;
+        int backwallAlign = -7;
         int driveDistanceInWarehouse = 45;
 
         for (int i = 0; i < 3; i++) {
+            if (i == 1) // --- Move backwall align towards warehouse as it slides when collecting
+                backwallAlign = -6;
+            if (i == 2)
+                backwallAlign = -5;
 
             // --- Move to deploy -- changes based on deploy level
-            appendages.setGatesUp();
             switch (barcodePlace) {
                 case 3:
                     appendages.gondalaHigh();
-                    drive.line(new Pose2d(-7, backwall + 3, Math.toRadians(180)));
+                    drive.line(new Pose2d(backwallAlign, backwall + 5 + (i * 2), Math.toRadians(180)));
+                    if (i > 0) { // --- Give the gondola time to settle down before releasing
+                        sleep(500);
+                    }
                     break;
                 case 2:
-                    drive.line(new Pose2d(-7, backwall + 22, Math.toRadians(180)));
+                    drive.line(new Pose2d(backwallAlign, backwall + 19, Math.toRadians(180)));
                     appendages.gondalaMiddle();
+                    sleep(500);
                     break;
                 case 1:
-                    drive.line(new Pose2d(-7, backwall + 32, Math.toRadians(180)));
+                    drive.line(new Pose2d(backwallAlign, backwall + 31, Math.toRadians(180)));
                     appendages.gondalaLow();
+                    sleep(500);
                     break;
             }
 
-            // --- Deploy!
-            // sleep(500);
-            appendages.extakeGondola();
-            // sleep(500);
-            // --- Lower gondola
-            appendages.gondalaDown();
-            appendages.setGatesDown();
+            appendages.extakeGondola(); // --- Deploy!
+            appendages.gondalaDown(); // --- Lower gondola
 
-            // --- Move back to wall
-            // drive.line(new Pose2d(-7, backwall, Math.toRadians(180)));
-            drive.line(new Pose2d(10, backwall, Math.toRadians(180)));
+            drive.line(new Pose2d(14, backwall, Math.toRadians(180))); // --- Move back to wall
 
-            // --- After first block, switch to top
-            barcodePlace = 3;
+            barcodePlace = 3; // --- After first block, switch to top
 
             appendages.intakeBlocksStart();
 
-            // --- For first or second block
-            if (i < 2) {
-                // --- Move to blocks
-                drive.line(new Pose2d(driveDistanceInWarehouse, backwall, Math.toRadians(180)));
+            if (i < 2) { // --- For first or second block
+                drive.line(new Pose2d(driveDistanceInWarehouse, backwall, Math.toRadians(180))); // --- Move to blocks
 
                 // --- Collect blocks using sensor to detect block
                 while (!appendages.isBlockInGondola() && !isStopRequested()) {
                     // --- Increment distance into warehouse
-                    driveDistanceInWarehouse += 1;
-                    if (driveDistanceInWarehouse > 62)
-                        driveDistanceInWarehouse = 58;
+                    driveDistanceInWarehouse += 2;
+                    if (driveDistanceInWarehouse > 55)
+                        driveDistanceInWarehouse = 50;
 
                     drive.setSpeed(MecanumAutonomous.Speed.VERY_SLOW);
-                    drive.line(new Pose2d(driveDistanceInWarehouse, backwall, Math.toRadians(180)));
-
-                    telemetry.addData("Drive warehouse", driveDistanceInWarehouse);
-                    telemetry.addData("Is block in gondola", appendages.isBlockInGondola());
-                    telemetry.addData("Distance", appendages.getBlockDistance());
-                    telemetry.update();
+                    try {
+                        drive.line(new Pose2d(driveDistanceInWarehouse, backwall, Math.toRadians(180)));
+                    } catch (Exception e) {
+                    }
                 }
 
                 drive.setSpeed(MecanumAutonomous.Speed.FAST);
 
             } else { // --- For third block (go park!)
-                drive.line(new Pose2d(driveDistanceInWarehouse + 3, backwall, Math.toRadians(180)));
+                appendages.intakeBlocksStop();
+                drive.line(new Pose2d(60, backwall, Math.toRadians(180)));
             }
 
             backwall -= 2; // --- Move backwall further away to compensate for strafing
         }
 
-        appendages.intakeBlocksStop();
-
-        sleep(10000);
+        sleep(4000);
     }
 }

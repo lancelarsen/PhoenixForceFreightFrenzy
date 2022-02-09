@@ -59,13 +59,14 @@ public class TeleOp {
         this.opMode = opMode;
         this.alliance = alliance;
 
-        appendages = new AppendagesTeleOp(opMode);
-
         drive = new MecanumTeleOp(opMode);
         drive.enableTurning(true);
 
         if (alliance == AutoUtils.Alliance.RED)
             drive.setStickGains(-1, -1, 1);
+
+        appendages = new AppendagesTeleOp(opMode);
+        appendages.updateLights(alliance);
     }
 
     public void run() {

@@ -42,7 +42,7 @@ public class AppendagesTeleOp extends BotAppendages {
     }
 
     public void updateLights(AutoUtils.Alliance alliance) {
-        if (startTime == -1) {
+        if (startTime == -1 && opMode.opModeIsActive()) {
             startTime = nanoClock.seconds();
         }
         double activeTime = nanoClock.seconds() - startTime;
