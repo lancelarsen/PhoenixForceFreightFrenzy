@@ -5,6 +5,9 @@ import org.firstinspires.ftc.teamcode.vision.BarcodeVision;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AbstractAuto;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
+@Disabled
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "BlueInVisionTest", group = "1")
 public class BlueInVisionTest extends AbstractAuto {
 

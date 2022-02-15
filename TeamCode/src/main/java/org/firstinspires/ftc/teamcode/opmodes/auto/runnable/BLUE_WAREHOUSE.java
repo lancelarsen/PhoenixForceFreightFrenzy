@@ -21,6 +21,7 @@ public class BLUE_WAREHOUSE extends AbstractAuto {
         telemetry.addData("Capstone index", vision.getCapstoneIndex());
         telemetry.addData("Color level", vision.getColorLevel());
         int barcodePlace = vision.getCapstoneIndex();
+        int barcodeOriginal = barcodePlace;
         if (barcodePlace == 0)
             barcodePlace = 3; // --- Default if not detected
 
@@ -33,16 +34,33 @@ public class BLUE_WAREHOUSE extends AbstractAuto {
         int driveDistanceInWarehouse = 48;
 
         for (int i = 0; i < 3; i++) {
-            if (i == 1) // --- Move backwall align towards warehouse as it slides when collecting
-                backwallAlign = -3;
-            if (i == 2)
-                backwallAlign = 0;
+
+            switch (barcodeOriginal) {
+                case 3:
+                    if (i == 1) // --- Move backwall align towards warehouse as it slides when collecting
+                        backwallAlign = -1;
+                    if (i == 2)
+                        backwallAlign = 1;
+                    break;
+                case 2:
+                    if (i == 1) // --- Move backwall align towards warehouse as it slides when collecting
+                        backwallAlign = -3;
+                    if (i == 2)
+                        backwallAlign = -1;
+                    break;
+                case 1:
+                    if (i == 1) // --- Move backwall align towards warehouse as it slides when collecting
+                        backwallAlign = -3;
+                    if (i == 2)
+                        backwallAlign = -1;
+                    break;
+            }
 
             // --- Move to deploy -- changes based on deploy level
             switch (barcodePlace) {
                 case 3:
                     appendages.gondalaHigh();
-                    drive.line(new Pose2d(backwallAlign, backwall - 4, 0));
+                    drive.line(new Pose2d(backwallAlign, backwall - 2, 0));
                     if (i > 0) { // --- Give the gondola time to settle down before releasing
                         sleep(500);
                     }
@@ -75,8 +93,8 @@ public class BLUE_WAREHOUSE extends AbstractAuto {
                 while (!appendages.isBlockInGondola() && !isStopRequested()) {
                     // --- Increment distance into warehouse
                     driveDistanceInWarehouse += 2;
-                    if (driveDistanceInWarehouse > 55)
-                        driveDistanceInWarehouse = 50;
+                    if (driveDistanceInWarehouse > 60)
+                        driveDistanceInWarehouse = 57;
 
                     drive.setSpeed(MecanumAutonomous.Speed.VERY_SLOW);
                     try {
@@ -92,7 +110,7 @@ public class BLUE_WAREHOUSE extends AbstractAuto {
                 drive.line(new Pose2d(60, backwall, 0));
             }
 
-            backwall -= 2; // --- Move backwall further away to compensate for strafing
+            backwall += 2; // --- Move backwall further away to compensate for strafing
         }
 
         sleep(4000);

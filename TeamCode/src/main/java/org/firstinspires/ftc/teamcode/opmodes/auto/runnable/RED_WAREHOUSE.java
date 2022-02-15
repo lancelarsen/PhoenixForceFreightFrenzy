@@ -34,9 +34,9 @@ public class RED_WAREHOUSE extends AbstractAuto {
 
         for (int i = 0; i < 3; i++) {
             if (i == 1) // --- Move backwall align towards warehouse as it slides when collecting
-                backwallAlign = -6;
+                backwallAlign = -2;
             if (i == 2)
-                backwallAlign = -5;
+                backwallAlign = 1;
 
             // --- Move to deploy -- changes based on deploy level
             switch (barcodePlace) {
@@ -75,8 +75,8 @@ public class RED_WAREHOUSE extends AbstractAuto {
                 while (!appendages.isBlockInGondola() && !isStopRequested()) {
                     // --- Increment distance into warehouse
                     driveDistanceInWarehouse += 2;
-                    if (driveDistanceInWarehouse > 55)
-                        driveDistanceInWarehouse = 50;
+                    if (driveDistanceInWarehouse > 60)
+                        driveDistanceInWarehouse = 55;
 
                     drive.setSpeed(MecanumAutonomous.Speed.VERY_SLOW);
                     try {

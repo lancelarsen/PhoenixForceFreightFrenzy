@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.appendages;
 
+import java.text.NumberFormat;
+
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -17,6 +19,7 @@ public class AppendagesTeleOp extends BotAppendages {
     }
 
     private LinearOpMode opMode;
+    private NumberFormat numberFormat;
 
     private NanoClock nanoClock;
     private double startTime = -1;
@@ -38,6 +41,10 @@ public class AppendagesTeleOp extends BotAppendages {
         super(opMode.hardwareMap);
         this.opMode = opMode;
 
+        numberFormat = NumberFormat.getInstance();
+        numberFormat.setMinimumFractionDigits(2);
+        numberFormat.setMaximumFractionDigits(2);
+
         nanoClock = NanoClock.system();
     }
 
@@ -49,6 +56,8 @@ public class AppendagesTeleOp extends BotAppendages {
 
         if (80 < activeTime && activeTime < 90 && activeTime % 0.5 <= 0.25) {
             setBlinkinPattern(BlinkinPatterns.OFF);
+        } else if (115 < activeTime && activeTime < 120) {
+            setBlinkinPattern(BlinkinPatterns.TELE_FIVE_SECONDS_LEFT_PATTERN);
         } else {
             if (isTankDriveEnabled) {
                 setBlinkinPattern(BlinkinPatterns.TANK_DRIVE_ACTIVE_PATTERN);
@@ -64,6 +73,8 @@ public class AppendagesTeleOp extends BotAppendages {
                 }
             }
         }
+
+        opMode.telemetry.addData("Game time", numberFormat.format(activeTime));
     }
 
     public void updateTankDrive(double forwardDriveSpeed) {
@@ -120,6 +131,12 @@ public class AppendagesTeleOp extends BotAppendages {
 
         setFrontGateUp(!canAcceptBlock || !frontIntakeToggle.isActive());
         setRearGateUp(!canAcceptBlock || !rearIntakeToggle.isActive());
+
+        opMode.telemetry.addData("Block sensor distance",
+                numberFormat.format(gondolaBockSensor.getDistance(DistanceUnit.CM)));
+        opMode.telemetry.addData("Block sensor mean", numberFormat.format(getBlockMeanDistance()));
+        opMode.telemetry.addData("Can accept block", canAcceptBlock);
+        opMode.telemetry.update();
     }
 
     private boolean isIntakeReversed() {
@@ -154,11 +171,5 @@ public class AppendagesTeleOp extends BotAppendages {
         }
 
         extakeGondola(opMode.gamepad2.x);
-
-        opMode.telemetry.addData("Block sensor distance", gondolaBockSensor.getDistance(DistanceUnit.CM));
-        opMode.telemetry.addData("Block sensor mean", getBlockMeanDistance());
-        opMode.telemetry.addData("Block in gondola", isBlockInGondola());
-        opMode.telemetry.addData("Can accept block", canAcceptBlock());
-        opMode.telemetry.update();
     }
 }

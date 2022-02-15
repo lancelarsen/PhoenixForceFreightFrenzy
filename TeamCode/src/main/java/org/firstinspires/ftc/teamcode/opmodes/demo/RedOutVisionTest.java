@@ -4,7 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.vision.BarcodeVision;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AbstractAuto;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
+@Disabled
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "RedOutVisionTest", group = "1")
 public class RedOutVisionTest extends AbstractAuto {
 

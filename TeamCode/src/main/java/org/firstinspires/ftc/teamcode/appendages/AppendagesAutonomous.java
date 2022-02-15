@@ -104,6 +104,14 @@ public class AppendagesAutonomous extends BotAppendages {
         gondolaDeployer.setPosition(GONDOLA_DEPLOYER_CLOSED_POSITION);
     }
 
+    public void gondolaOpen() {
+        gondolaDeployer.setPosition(GONDOLA_DEPLOYER_OPEN_POSITION);
+    }
+
+    public void gondolaClosed() {
+        gondolaDeployer.setPosition(GONDOLA_DEPLOYER_CLOSED_POSITION);
+    }
+
     public void setGatesUp() {
         setFrontGateUp(true);
         setRearGateUp(true);

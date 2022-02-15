@@ -12,6 +12,9 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
+@Disabled
 @Autonomous(group = "auto")
 public class RED_DUCK_HUNT extends AbstractAuto {
     public void runOpMode() {

@@ -43,6 +43,8 @@ import com.qualcomm.robotcore.hardware.SwitchableLight;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
 /**
  * This is an example LinearOpMode that shows how to use a color sensor in a
  * generic
@@ -81,6 +83,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * Remove or comment out the @Disabled line to add this Op Mode to the Driver
  * Station OpMode list
  */
+@Disabled
 @TeleOp(name = "Block Sensor", group = "Sensor")
 public class BlockSensor extends LinearOpMode {
 
