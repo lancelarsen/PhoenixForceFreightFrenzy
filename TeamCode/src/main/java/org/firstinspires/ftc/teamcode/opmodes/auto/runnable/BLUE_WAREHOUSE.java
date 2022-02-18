@@ -93,10 +93,13 @@ public class BLUE_WAREHOUSE extends AbstractAuto {
                 while (!appendages.isBlockInGondola() && !isStopRequested()) {
                     // --- Increment distance into warehouse
                     driveDistanceInWarehouse += 2;
-                    if (driveDistanceInWarehouse > 60)
-                        driveDistanceInWarehouse = 57;
+                    if (driveDistanceInWarehouse > 60) {
+                        driveDistanceInWarehouse = 45;
+                        drive.setSpeed(MecanumAutonomous.Speed.FAST);
+                    } else {
+                        drive.setSpeed(MecanumAutonomous.Speed.VERY_SLOW);
+                    }
 
-                    drive.setSpeed(MecanumAutonomous.Speed.VERY_SLOW);
                     try {
                         drive.line(new Pose2d(driveDistanceInWarehouse, backwall, 0));
                     } catch (Exception e) {
@@ -104,6 +107,10 @@ public class BLUE_WAREHOUSE extends AbstractAuto {
                 }
 
                 drive.setSpeed(MecanumAutonomous.Speed.FAST);
+
+                // Don't drive over to drop off block if not enough time to then go park
+                if (getGameTime() > 24)
+                    break;
 
             } else { // --- For third block (go park!)
                 appendages.intakeBlocksStop();

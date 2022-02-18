@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
+import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -12,6 +13,9 @@ abstract public class AbstractAuto extends LinearOpMode {
     public MecanumAutonomous drive;
     public volatile AppendagesAutonomous appendages;
     public volatile BarcodeVision vision;
+
+    private NanoClock nanoClock;
+    private double startTime = -1;
 
     private static final long POWERSHOT_SHOOT_DELAY = 500;
     private static final long POWERSHOT_MOVE_DELAY = 500;
@@ -47,10 +51,20 @@ abstract public class AbstractAuto extends LinearOpMode {
         if (isStopRequested())
             return;
 
+        nanoClock = NanoClock.system();
+        startTime = nanoClock.seconds();
+
         vision.setDetectionPaused(true);
 
         appendages.enableIntakeGates();
         updateGameLights(basePattern);
+    }
+
+    public double getGameTime() {
+        if (startTime < 0)
+            return 0;
+
+        return nanoClock.seconds() - startTime;
     }
 
     // Runs till opmode start
