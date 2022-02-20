@@ -45,7 +45,7 @@ public class RED_DUCK_HUNT extends AbstractAuto {
         appendages.enableDuckWheels(false);
 
         // --- Move to deploy -- changes based on deploy level
-        appendages.setGatesUp();
+        // appendages.setGatesUp();
         switch (barcodePlace) {
             case 3:
                 drive.line(new Pose2d(-51, -18, Math.toRadians(90)));
@@ -66,7 +66,7 @@ public class RED_DUCK_HUNT extends AbstractAuto {
         appendages.extakeGondola();
         sleep(500);
         appendages.gondalaDown();
-        appendages.setGatesDown();
+        // appendages.setGatesDown();
 
         // --- Park
         // drive.line(new Pose2d(-68, -35, Math.toRadians(90)));
@@ -91,13 +91,13 @@ public class RED_DUCK_HUNT extends AbstractAuto {
 
         appendages.intakeBlocksStop();
 
-        appendages.setGatesUp();
+        // appendages.setGatesUp();
         appendages.gondalaHigh();
         sleep(1500);
         appendages.extakeGondola();
         sleep(500);
         appendages.gondalaDown();
-        appendages.setGatesDown();
+        // appendages.setGatesDown();
 
         // --- Park
         drive.line(new Pose2d(40, -88, Math.toRadians(180)));

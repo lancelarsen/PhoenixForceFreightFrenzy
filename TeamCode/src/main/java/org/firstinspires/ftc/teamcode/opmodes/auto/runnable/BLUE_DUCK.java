@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.vision.BarcodeVision;
 public class BLUE_DUCK extends AbstractAuto {
     public void runOpMode() {
         initAuto(AutoUtils.Alliance.BLUE, AutoUtils.StartingPosition.OUTSIDE);
+        appendages.disableIntakeGates();
 
         // --- Read the barcode position
         telemetry.addData("Capstone index", vision.getCapstoneIndex());
@@ -44,7 +45,7 @@ public class BLUE_DUCK extends AbstractAuto {
         appendages.enableDuckWheels(false);
 
         // --- Move to deploy -- changes based on deploy level
-        appendages.setGatesUp();
+        // appendages.setGatesUp();
         switch (barcodePlace) {
             case 3:
                 drive.line(new Pose2d(-50, 19, Math.toRadians(82)));
@@ -78,7 +79,7 @@ public class BLUE_DUCK extends AbstractAuto {
 
         sleep(500);
         appendages.gondalaDown();
-        appendages.setGatesDown();
+        // appendages.setGatesDown();
 
         // --- Park
         switch (barcodePlace) {

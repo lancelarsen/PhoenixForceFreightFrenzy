@@ -42,7 +42,7 @@ public class BotAppendages {
     public static final double FRONT_INTAKE_DEPLOYED_POSITION = 1;
     public static final double REAR_INTAKE_STOWED_POSITION = 1;
     public static final double REAR_INTAKE_DEPLOYED_POSITION = 0.5;
-    public static final double INTAKE_ROLLER_SPEED = 1.0;
+    public static final double INTAKE_ROLLER_SPEED = 0.5;
 
     public static final double FRONT_GATE_DOWN_POSITION = 0.85;
     public static final double FRONT_GATE_UP_POSITION = 1;
@@ -51,8 +51,11 @@ public class BotAppendages {
 
     public static final double DUCK_WHEEL_SPEED = -1.0;
 
+    public static final double GONDOLA_LIFTER_HIGH_POSITION = 110;
+    public static final double GONDOLA_LIFTER_MIDDLE_POSITION = 48;
+    public static final double GONDOLA_LIFTER_LOW_POSITION = 11.5;
     public static final double GONDOLA_LIFTER_DOWN_POSITION = 0;
-    public static final double GONDOLA_LIFTER_UP_POSITION = 110;
+
     public static final double GONDOLA_LIFTER_SPEED = 1.0;
     public static final double GONDOLA_DEPLOYER_CLOSED_POSITION = 0.5;
     public static final double GONDOLA_DEPLOYER_OPEN_POSITION = 0.1;
@@ -169,7 +172,7 @@ public class BotAppendages {
 
     public void setGondolaLiftDirection(GondolaLiftDirection direction) {
 
-        double maxPos = EncoderUtil.inchesToTicks(EncoderUtil.Motor.GOBILDA_5202, GONDOLA_LIFTER_UP_POSITION);
+        double maxPos = EncoderUtil.inchesToTicks(EncoderUtil.Motor.GOBILDA_5202, GONDOLA_LIFTER_HIGH_POSITION);
         double minPos = EncoderUtil.inchesToTicks(EncoderUtil.Motor.GOBILDA_5202, GONDOLA_LIFTER_DOWN_POSITION);
 
         if (direction == GondolaLiftDirection.EXTEND && gondolaLifter.getCurrentPosition() >= maxPos)
@@ -184,7 +187,11 @@ public class BotAppendages {
         if (direction == GondolaLiftDirection.HOLD)
             speed = 0;
 
-        gondolaLifter.setPower(speed);
+        if (speed != 0)
+            gondolaLifter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        if (gondolaLifter.getMode() == DcMotor.RunMode.RUN_USING_ENCODER)
+            gondolaLifter.setPower(speed);
     }
 
     public void extakeGondola(boolean extake) {
@@ -196,15 +203,21 @@ public class BotAppendages {
     }
 
     public void setGondalaPosition(double position) {
-        int maxPos = EncoderUtil.inchesToTicks(EncoderUtil.Motor.GOBILDA_5202, GONDOLA_LIFTER_UP_POSITION);
+        int ticks = EncoderUtil.inchesToTicks(EncoderUtil.Motor.GOBILDA_5202, position);
+
+        setGondalaPositionTicks(ticks);
+    }
+
+    public void setGondalaPositionTicks(double ticks) {
+        int maxPos = EncoderUtil.inchesToTicks(EncoderUtil.Motor.GOBILDA_5202, GONDOLA_LIFTER_HIGH_POSITION);
         int minPos = EncoderUtil.inchesToTicks(EncoderUtil.Motor.GOBILDA_5202, GONDOLA_LIFTER_DOWN_POSITION);
 
-        if (position > maxPos)
-            position = maxPos;
-        if (position < minPos)
-            position = minPos;
+        if (ticks > maxPos)
+            ticks = maxPos;
+        if (ticks < minPos)
+            ticks = minPos;
 
-        gondolaLifter.setTargetPosition((int) position);
+        gondolaLifter.setTargetPosition((int) ticks);
         gondolaLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         gondolaLifter.setPower(1.0);
     }

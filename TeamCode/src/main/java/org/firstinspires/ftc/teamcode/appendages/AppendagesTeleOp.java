@@ -24,6 +24,9 @@ public class AppendagesTeleOp extends BotAppendages {
     private NanoClock nanoClock;
     private double startTime = -1;
 
+    private GamepadUtils gamepad1Utils;
+    private GamepadUtils gamepad2Utils;
+
     private DriveDirection lastDirectionDriven = DriveDirection.FORWARD;
 
     private boolean isTankDriveEnabled = false;
@@ -36,6 +39,8 @@ public class AppendagesTeleOp extends BotAppendages {
     private ButtonToggle duckWheelsToggle = new ButtonToggle();
 
     private ButtonToggle gondolaLifterAdjToggle = new ButtonToggle();
+    private boolean gondolaPresetPrePressed = false;
+    private double gondolaPresetPosition = 0;
 
     public AppendagesTeleOp(LinearOpMode opMode) {
         super(opMode.hardwareMap);
@@ -46,6 +51,9 @@ public class AppendagesTeleOp extends BotAppendages {
         numberFormat.setMaximumFractionDigits(2);
 
         nanoClock = NanoClock.system();
+
+        gamepad1Utils = new GamepadUtils(opMode.gamepad1);
+        gamepad2Utils = new GamepadUtils(opMode.gamepad2);
     }
 
     public void updateLights(AutoUtils.Alliance alliance) {
@@ -161,9 +169,23 @@ public class AppendagesTeleOp extends BotAppendages {
         if (gondolaLifterAdjToggle.isActive()) {
             gondolaLifter.setPower(-opMode.gamepad2.right_stick_y);
         } else {
+            if (!gondolaPresetPrePressed) {
+                if (opMode.gamepad2.dpad_up) {
+                    goToPresetGondolaPosition(GONDOLA_LIFTER_HIGH_POSITION);
+                } else if (opMode.gamepad2.dpad_left || opMode.gamepad2.dpad_right) {
+                    goToPresetGondolaPosition(GONDOLA_LIFTER_MIDDLE_POSITION);
+                } else if (opMode.gamepad2.dpad_down) {
+                    goToPresetGondolaPosition(GONDOLA_LIFTER_LOW_POSITION);
+                }
+            } else if (!gamepad2Utils.isDpadActive()) {
+                gondolaPresetPrePressed = false;
+            }
+
             if (opMode.gamepad2.right_bumper) {
+                gondolaPresetPosition = 0;
                 setGondolaLiftDirection(GondolaLiftDirection.EXTEND);
             } else if (opMode.gamepad2.right_trigger > TRIGGER_PRESSED_THRESH) {
+                gondolaPresetPosition = 0;
                 setGondolaLiftDirection(GondolaLiftDirection.RETRACT);
             } else {
                 setGondolaLiftDirection(GondolaLiftDirection.HOLD);
@@ -171,5 +193,17 @@ public class AppendagesTeleOp extends BotAppendages {
         }
 
         extakeGondola(opMode.gamepad2.x);
+    }
+
+    private void goToPresetGondolaPosition(double position) {
+        if (gondolaPresetPosition == position) {
+            gondolaPresetPosition = 0;
+            setGondalaPosition(GONDOLA_LIFTER_DOWN_POSITION);
+        } else {
+            gondolaPresetPosition = position;
+            setGondalaPosition(position);
+        }
+
+        gondolaPresetPrePressed = true;
     }
 }

@@ -10,7 +10,10 @@ import static org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils.sleep;
 
 public class AppendagesAutonomous extends BotAppendages {
     private LinearOpMode opMode;
+
     private volatile double intakeSpeed = 0;
+
+    private Thread gateThread;
 
     public AppendagesAutonomous(LinearOpMode opMode) {
         super(opMode.hardwareMap);
@@ -70,32 +73,45 @@ public class AppendagesAutonomous extends BotAppendages {
             }
         };
 
-        Thread gateThread = new Thread(gateTask);
+        gateThread = new Thread(gateTask);
         gateThread.start();
     }
 
+    public void disableIntakeGates() {
+        if (gateThread != null)
+            gateThread.interrupt();
+
+        setGatesDown();
+    }
+
+    public boolean isIntakeGatesEnabled() {
+        if (gateThread == null)
+            return false;
+
+        return !gateThread.isInterrupted();
+    }
+
     public void gondalaHigh() {
-        double position = EncoderUtil.inchesToTicks(EncoderUtil.Motor.GOBILDA_5202, GONDOLA_LIFTER_UP_POSITION);
-        setGondalaPosition(position);
+        setGondalaPosition(GONDOLA_LIFTER_HIGH_POSITION);
+
     }
 
     public void gondalaMiddle() {
-        double position = 1250;
-        setGondalaPosition(position);
+        setGondalaPosition(GONDOLA_LIFTER_MIDDLE_POSITION);
+
     }
 
     public void gondalaLow() {
-        double position = 300;
-        setGondalaPosition(position);
+        setGondalaPosition(GONDOLA_LIFTER_LOW_POSITION);
     }
 
     public void gondalaDown() {
-        double position = EncoderUtil.inchesToTicks(EncoderUtil.Motor.GOBILDA_5202, GONDOLA_LIFTER_DOWN_POSITION);
-        setGondalaPosition(position);
+        setGondalaPosition(GONDOLA_LIFTER_DOWN_POSITION);
 
         // --- Manual down to make sure the gondola is fully down
         gondolaLifter.setPower(-1);
         sleep(250);
+        // gondolaLifter.setPower(0);
     }
 
     public void extakeGondola() {

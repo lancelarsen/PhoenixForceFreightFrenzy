@@ -96,7 +96,9 @@ abstract public class AbstractAuto extends LinearOpMode {
     private void updateGameLights(RevBlinkinLedDriver.BlinkinPattern basePattern) {
         Runnable lightTask = () -> {
             while (!Thread.interrupted() && !isStopRequested()) {
-                if (appendages.canAcceptBlock()) {
+                if (!appendages.isIntakeGatesEnabled()) {
+                    appendages.setBlinkinPattern(BlinkinPatterns.BLOCK_SENSOR_DISABLED_PATTERN);
+                } else if (appendages.canAcceptBlock()) {
                     appendages.setBlinkinPattern(basePattern);
                 } else {
                     appendages.setBlinkinPattern(BlinkinPatterns.BLOCK_IN_GONDOLA_PATTEN);

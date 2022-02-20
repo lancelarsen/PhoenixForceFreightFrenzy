@@ -42,7 +42,7 @@ public class RED_DUCK extends AbstractAuto {
         appendages.enableDuckWheels(false);
 
         // --- Move to deploy -- changes based on deploy level
-        appendages.setGatesUp();
+        // appendages.setGatesUp();
         switch (barcodePlace) {
             case 3:
                 drive.line(new Pose2d(-50, -18, Math.toRadians(90)));
@@ -76,7 +76,7 @@ public class RED_DUCK extends AbstractAuto {
 
         sleep(500);
         appendages.gondalaDown();
-        appendages.setGatesDown();
+        // appendages.setGatesDown();
 
         // --- Park
         switch (barcodePlace) {
