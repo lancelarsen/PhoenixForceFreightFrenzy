@@ -23,7 +23,7 @@ public class MecanumTeleOp extends BotMecanumDrive {
     private double speedMultiplier = FAST_SPEED_MULTIPLIER;
     private boolean turningEnabled = false;
 
-    private double stickGains[] = {1, 1, 1};
+    private double stickGains[] = { 1, 1, 1 };
 
     public MecanumTeleOp(LinearOpMode opMode) {
         super(opMode.hardwareMap);
@@ -60,22 +60,21 @@ public class MecanumTeleOp extends BotMecanumDrive {
             Gamepad gamepad = opMode.gamepad1;
 
             if (gamepad.dpad_up) {
-                drivePower = new Pose2d(speedMultiplier, 0, 0);
+                drivePower = new Pose2d(speedMultiplier * stickGains[0], 0, 0);
             } else if (gamepad.dpad_down) {
-                drivePower = new Pose2d(-speedMultiplier, 0, 0);
+                drivePower = new Pose2d(-speedMultiplier * stickGains[0], 0, 0);
             }
 
             if (gamepad.dpad_left) {
-                drivePower = new Pose2d(0, speedMultiplier, 0);
+                drivePower = new Pose2d(0, speedMultiplier * stickGains[1], 0);
             } else if (gamepad.dpad_right) {
-                drivePower = new Pose2d(0, -speedMultiplier, 0);
+                drivePower = new Pose2d(0, -speedMultiplier * stickGains[1], 0);
             }
         } else {
             drivePower = new Pose2d(
                     getForwardDriveSpeed() * speedMultiplier,
                     getLateralDriveSpeed() * speedMultiplier,
-                    turningEnabled ? getTurningAmount() * speedMultiplier : 0
-                    );
+                    turningEnabled ? getTurningAmount() * speedMultiplier : 0);
         }
 
         setWeightedDrivePower(drivePower);
@@ -106,10 +105,12 @@ public class MecanumTeleOp extends BotMecanumDrive {
         followTrajectoryAsync(trajectory);
         while (isBusy()) {
             update();
-            /*if (Thread.interrupted()) {
-                cancelFollowing();
-                throw new InterruptedException();
-            }*/
+            /*
+             * if (Thread.interrupted()) {
+             * cancelFollowing();
+             * throw new InterruptedException();
+             * }
+             */
         }
     }
 }

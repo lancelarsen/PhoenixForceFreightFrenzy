@@ -42,7 +42,7 @@ public class BotAppendages {
     public static final double FRONT_INTAKE_DEPLOYED_POSITION = 1;
     public static final double REAR_INTAKE_STOWED_POSITION = 1;
     public static final double REAR_INTAKE_DEPLOYED_POSITION = 0.5;
-    public static final double INTAKE_ROLLER_SPEED = 0.5;
+    public static final double INTAKE_ROLLER_SPEED = 1;
 
     public static final double FRONT_GATE_DOWN_POSITION = 0.85;
     public static final double FRONT_GATE_UP_POSITION = 1;

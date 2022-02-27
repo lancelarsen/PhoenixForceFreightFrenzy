@@ -9,6 +9,9 @@ import org.firstinspires.ftc.teamcode.appendages.BlinkinPatterns;
 import org.firstinspires.ftc.teamcode.drive.MecanumAutonomous;
 import org.firstinspires.ftc.teamcode.vision.BarcodeVision;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+
 abstract public class AbstractAuto extends LinearOpMode {
     public MecanumAutonomous drive;
     public volatile AppendagesAutonomous appendages;
@@ -64,7 +67,11 @@ abstract public class AbstractAuto extends LinearOpMode {
         if (startTime < 0)
             return 0;
 
-        return nanoClock.seconds() - startTime;
+        double time = nanoClock.seconds() - startTime;
+        // DecimalFormat df = new DecimalFormat("0.00");
+        // double timeShort = df.format(time);
+
+        return time;
     }
 
     // Runs till opmode start

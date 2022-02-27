@@ -88,7 +88,7 @@ public class AppendagesAutonomous extends BotAppendages {
         if (gateThread == null)
             return false;
 
-        return !gateThread.isInterrupted();
+        return gateThread.isAlive();
     }
 
     public void gondalaHigh() {
@@ -136,5 +136,10 @@ public class AppendagesAutonomous extends BotAppendages {
     public void setGatesDown() {
         setFrontGateUp(false);
         setRearGateUp(false);
+    }
+
+    public void showMessage(String message) {
+        opMode.telemetry.addData(message, 0);
+        opMode.telemetry.update();
     }
 }

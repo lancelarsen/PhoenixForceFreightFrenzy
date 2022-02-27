@@ -16,6 +16,7 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 public class RED_WAREHOUSE extends AbstractAuto {
     public void runOpMode() {
         initAuto(AutoUtils.Alliance.RED, AutoUtils.StartingPosition.INSIDE);
+        appendages.disableIntakeGates();
 
         // --- Read the barcode position
         telemetry.addData("Capstone index", vision.getCapstoneIndex());
@@ -67,6 +68,7 @@ public class RED_WAREHOUSE extends AbstractAuto {
             barcodePlace = 3; // --- After first block, switch to top
 
             appendages.intakeBlocksStart();
+            appendages.enableIntakeGates();
 
             if (i < 2) { // --- For first or second block
                 drive.line(new Pose2d(driveDistanceInWarehouse, backwall, Math.toRadians(180))); // --- Move to blocks
@@ -91,6 +93,8 @@ public class RED_WAREHOUSE extends AbstractAuto {
                 appendages.intakeBlocksStop();
                 drive.line(new Pose2d(60, backwall, Math.toRadians(180)));
             }
+
+            appendages.disableIntakeGates();
 
             backwall -= 2; // --- Move backwall further away to compensate for strafing
         }

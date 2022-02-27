@@ -14,12 +14,21 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 
 @Autonomous(group = "auto")
 public class BLUE_WAREHOUSE extends AbstractAuto {
+
+    // --- Settings
+    int backwall = 62;
+    int distanceBlockDeploy = -5;
+    int distanceIntoWarehouse = 51;
+    int distanceIntoWarehouseMax = 63;
+    int distanceLastBlock = distanceIntoWarehouse;
+
+    String _message = "";
+
     public void runOpMode() {
         initAuto(AutoUtils.Alliance.BLUE, AutoUtils.StartingPosition.INSIDE);
+        appendages.disableIntakeGates();
 
         // --- Read the barcode position
-        telemetry.addData("Capstone index", vision.getCapstoneIndex());
-        telemetry.addData("Color level", vision.getColorLevel());
         int barcodePlace = vision.getCapstoneIndex();
         int barcodeOriginal = barcodePlace;
         if (barcodePlace == 0)
@@ -29,97 +38,138 @@ public class BLUE_WAREHOUSE extends AbstractAuto {
         drive.setSpeed(MecanumAutonomous.Speed.FAST);
         drive.setCurrentPosition(new Pose2d(13, 62, 0));
 
-        int backwall = 62;
-        int backwallAlign = -5;
-        int driveDistanceInWarehouse = 48;
+        AddMessage("--- Start ---");
+        showCurrentInfo();
 
         for (int i = 0; i < 3; i++) {
 
+            AddMessage("--- Set backwall distance ---");
             switch (barcodeOriginal) {
                 case 3:
+                    AddMessage("--- HIGH ---");
                     if (i == 1) // --- Move backwall align towards warehouse as it slides when collecting
-                        backwallAlign = -1;
+                        distanceBlockDeploy = 2;
                     if (i == 2)
-                        backwallAlign = 1;
+                        distanceBlockDeploy = 7;
                     break;
                 case 2:
+                    AddMessage("--- MIDDLE ---");
                     if (i == 1) // --- Move backwall align towards warehouse as it slides when collecting
-                        backwallAlign = -3;
+                        distanceBlockDeploy = -5; // -3;
                     if (i == 2)
-                        backwallAlign = -1;
+                        distanceBlockDeploy = -5; // -1;
                     break;
                 case 1:
+                    AddMessage("--- LOW ---");
                     if (i == 1) // --- Move backwall align towards warehouse as it slides when collecting
-                        backwallAlign = -3;
+                        distanceBlockDeploy = -3;
                     if (i == 2)
-                        backwallAlign = -1;
+                        distanceBlockDeploy = -1;
                     break;
             }
+            showCurrentInfo();
 
             // --- Move to deploy -- changes based on deploy level
             switch (barcodePlace) {
                 case 3:
                     appendages.gondalaHigh();
-                    drive.line(new Pose2d(backwallAlign, backwall - 2, 0));
+                    moveToPosition(distanceBlockDeploy, backwall - 5 - (i * 2), 0, "move to deploy HIGH");
                     if (i > 0) { // --- Give the gondola time to settle down before releasing
-                        sleep(500);
+                        moveToPosition(distanceBlockDeploy, backwall - 6 - (i * 2), 0, "move to deploy HIGH");
                     }
                     break;
                 case 2:
-                    drive.line(new Pose2d(backwallAlign, backwall - 19, 0));
+                    moveToPosition(distanceBlockDeploy, backwall - 22, 0, "move to deploy MIDDLE");
                     appendages.gondalaMiddle();
+                    moveToPosition(distanceBlockDeploy, backwall - 24, 0, "move to deploy MIDDLE");
                     sleep(500);
                     break;
                 case 1:
-                    drive.line(new Pose2d(backwallAlign - 2, backwall - 31, 0));
+                    moveToPosition(distanceBlockDeploy - 2, backwall - 31, 0, "move to deploy LOW");
                     appendages.gondalaLow();
+                    moveToPosition(distanceBlockDeploy - 2, backwall - 32, 0, "move to deploy LOW");
                     sleep(500);
                     break;
             }
 
+            AddMessage("--- deploy ---");
+            sleep(200);
             appendages.extakeGondola(); // --- Deploy!
             appendages.gondalaDown(); // --- Lower gondola
 
-            drive.line(new Pose2d(14, backwall, 0)); // --- Move back to wall
+            moveToPosition(14, backwall, 0, "move to backwall");
 
             barcodePlace = 3; // --- After first block, switch to top
 
             appendages.intakeBlocksStart();
+            appendages.enableIntakeGates();
 
             if (i < 2) { // --- For first or second block
-                drive.line(new Pose2d(driveDistanceInWarehouse, backwall, 0)); // --- Move to blocks
+                moveToPosition(distanceLastBlock, backwall, 0, "move to warehouse");
 
                 // --- Collect blocks using sensor to detect block
                 while (!appendages.isBlockInGondola() && !isStopRequested()) {
                     // --- Increment distance into warehouse
-                    driveDistanceInWarehouse += 2;
-                    if (driveDistanceInWarehouse > 60) {
-                        driveDistanceInWarehouse = 45;
+                    distanceIntoWarehouse += 2;
+                    if (distanceIntoWarehouse > distanceIntoWarehouseMax) {
+                        AddMessage("--- TOO far in warehouse! Backup ---");
                         drive.setSpeed(MecanumAutonomous.Speed.FAST);
+                        distanceIntoWarehouse = distanceLastBlock + 5;
+                        distanceIntoWarehouseMax += 3; // --- Increase due to slippage
                     } else {
-                        drive.setSpeed(MecanumAutonomous.Speed.VERY_SLOW);
+                        drive.setSpeed(MecanumAutonomous.Speed.SLOW);
                     }
+                    showCurrentInfo();
 
-                    try {
-                        drive.line(new Pose2d(driveDistanceInWarehouse, backwall, 0));
-                    } catch (Exception e) {
-                    }
+                    moveToPosition(distanceIntoWarehouse, backwall, 0, "move to blocks");
                 }
 
+                // --- Found block!
+                AddMessage("--- found block! ---");
+                distanceLastBlock = distanceIntoWarehouse;
+                showCurrentInfo();
                 drive.setSpeed(MecanumAutonomous.Speed.FAST);
 
-                // Don't drive over to drop off block if not enough time to then go park
-                if (getGameTime() > 24)
+                // --- Don't drive over to drop off block if not enough time to then go park
+                if (getGameTime() > 24) {
+                    AddMessage("--- less than time, don't leave warehouse ---");
+                    appendages.intakeBlocksStop();
+                    moveToPosition(distanceIntoWarehouseMax + 3, backwall, 0, "move to park");
                     break;
+                }
 
             } else { // --- For third block (go park!)
                 appendages.intakeBlocksStop();
-                drive.line(new Pose2d(60, backwall, 0));
+                moveToPosition(distanceIntoWarehouseMax + 3, backwall, 0, "move to park");
             }
 
-            backwall += 2; // --- Move backwall further away to compensate for strafing
+            appendages.disableIntakeGates();
+
+            backwall += 3; // --- Move backwall further away to compensate for strafing
+            showCurrentInfo();
         }
 
-        sleep(4000);
+        sleep(10000);
+    }
+
+    private void moveToPosition(double x, double y, double angle, String message) {
+        AddMessage("[" + x + " / " + y + " / " + angle + "] => " + message);
+        try {
+            drive.line(new Pose2d(x, y, Math.toRadians(angle)));
+        } catch (Exception e) {
+        }
+    }
+
+    private void showCurrentInfo() {
+        AddMessage("[BLK: " + distanceBlockDeploy
+                + " WH: " + distanceIntoWarehouse
+                + " (" + distanceLastBlock
+                + ") BW: " + backwall + "]");
+    }
+
+    private void AddMessage(String value) {
+        double time = Math.round(getGameTime() * 100.0) / 100.0;
+        _message = "(" + time + ") " + value + "\n" + _message;
+        appendages.showMessage(_message);
     }
 }

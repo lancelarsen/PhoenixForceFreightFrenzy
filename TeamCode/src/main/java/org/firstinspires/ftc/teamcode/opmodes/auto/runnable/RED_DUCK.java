@@ -16,6 +16,7 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 public class RED_DUCK extends AbstractAuto {
     public void runOpMode() {
         initAuto(AutoUtils.Alliance.RED, AutoUtils.StartingPosition.OUTSIDE);
+        appendages.disableIntakeGates();
 
         // --- Read the barcode position
         telemetry.addData("Capstone index", vision.getCapstoneIndex());
