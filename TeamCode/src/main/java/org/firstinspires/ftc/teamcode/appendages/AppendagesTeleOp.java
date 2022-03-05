@@ -125,11 +125,7 @@ public class AppendagesTeleOp extends BotAppendages {
         frontIntakeToggle.update(opMode.gamepad2.b);
         rearIntakeToggle.update(opMode.gamepad2.a);
 
-        boolean canAcceptBlock = canAcceptBlock() || blockSensorOverride.isActive();
         double speed = INTAKE_ROLLER_SPEED;
-        if (!canAcceptBlock) {
-            speed *= -1;
-        }
         if (isIntakeReversed()) {
             speed *= -1;
         }
@@ -148,8 +144,11 @@ public class AppendagesTeleOp extends BotAppendages {
     }
 
     private boolean isIntakeReversed() {
+        boolean canAcceptBlock = canAcceptBlock() || blockSensorOverride.isActive();
+
         return opMode.gamepad2.left_trigger > TRIGGER_PRESSED_THRESH
-                || opMode.gamepad1.left_trigger > TRIGGER_PRESSED_THRESH;
+                || opMode.gamepad1.left_trigger > TRIGGER_PRESSED_THRESH
+                || !canAcceptBlock;
     }
 
     public void updateDuckWheels() {
