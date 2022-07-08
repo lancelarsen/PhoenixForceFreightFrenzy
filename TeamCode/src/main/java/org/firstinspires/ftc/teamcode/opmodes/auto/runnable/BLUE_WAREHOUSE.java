@@ -18,8 +18,8 @@ public class BLUE_WAREHOUSE extends AbstractAuto {
     // --- Settings
     int backwall = 62;
     int distanceBlockDeploy = -5;
-    int distanceIntoWarehouse = 51;
-    int distanceIntoWarehouseMax = 63;
+    int distanceIntoWarehouse = 50;
+    int distanceIntoWarehouseMax = 60;
     int distanceLastBlock = distanceIntoWarehouse;
 
     String _message = "";
@@ -48,16 +48,16 @@ public class BLUE_WAREHOUSE extends AbstractAuto {
                 case 3:
                     AddMessage("--- HIGH ---");
                     if (i == 1) // --- Move backwall align towards warehouse as it slides when collecting
-                        distanceBlockDeploy = 2;
+                        distanceBlockDeploy = 0; // 3
                     if (i == 2)
-                        distanceBlockDeploy = 7;
+                        distanceBlockDeploy = 4; // 7
                     break;
                 case 2:
                     AddMessage("--- MIDDLE ---");
                     if (i == 1) // --- Move backwall align towards warehouse as it slides when collecting
-                        distanceBlockDeploy = -5; // -3;
+                        distanceBlockDeploy = -3; // -5
                     if (i == 2)
-                        distanceBlockDeploy = -5; // -1;
+                        distanceBlockDeploy = 0; // -2
                     break;
                 case 1:
                     AddMessage("--- LOW ---");
@@ -82,13 +82,13 @@ public class BLUE_WAREHOUSE extends AbstractAuto {
                     moveToPosition(distanceBlockDeploy, backwall - 22, 0, "move to deploy MIDDLE");
                     appendages.gondalaMiddle();
                     moveToPosition(distanceBlockDeploy, backwall - 24, 0, "move to deploy MIDDLE");
-                    sleep(500);
+                    sleep(200);
                     break;
                 case 1:
                     moveToPosition(distanceBlockDeploy - 2, backwall - 31, 0, "move to deploy LOW");
                     appendages.gondalaLow();
                     moveToPosition(distanceBlockDeploy - 2, backwall - 32, 0, "move to deploy LOW");
-                    sleep(500);
+                    sleep(200);
                     break;
             }
 
@@ -98,6 +98,13 @@ public class BLUE_WAREHOUSE extends AbstractAuto {
             appendages.gondalaDown(); // --- Lower gondola
 
             moveToPosition(14, backwall, 0, "move to backwall");
+            if (i < 2) // --- For runs except the last
+            {
+                appendages.gondalaLow();
+                sleep(100);
+                appendages.gondalaDown(); // --- Lower gondola
+                sleep(100);
+            }
 
             barcodePlace = 3; // --- After first block, switch to top
 
@@ -114,24 +121,30 @@ public class BLUE_WAREHOUSE extends AbstractAuto {
                     if (distanceIntoWarehouse > distanceIntoWarehouseMax) {
                         AddMessage("--- TOO far in warehouse! Backup ---");
                         drive.setSpeed(MecanumAutonomous.Speed.FAST);
-                        distanceIntoWarehouse = distanceLastBlock + 5;
+                        appendages.intakeBlocksReverse();
+                        distanceIntoWarehouse = distanceIntoWarehouse - 10;
+                        moveToPosition(distanceIntoWarehouse, backwall, 0, "move back");
+                        sleep(100);
+                        distanceIntoWarehouse += 2;
+                        // distanceIntoWarehouse = distanceLastBlock + 5;
                         distanceIntoWarehouseMax += 3; // --- Increase due to slippage
-                    } else {
-                        drive.setSpeed(MecanumAutonomous.Speed.SLOW);
+                        appendages.intakeBlocksStart();
                     }
-                    showCurrentInfo();
 
+                    showCurrentInfo();
+                    drive.setSpeed(MecanumAutonomous.Speed.SLOW);
                     moveToPosition(distanceIntoWarehouse, backwall, 0, "move to blocks");
                 }
 
                 // --- Found block!
                 AddMessage("--- found block! ---");
+                appendages.intakeBlocksReverse();
                 distanceLastBlock = distanceIntoWarehouse;
                 showCurrentInfo();
                 drive.setSpeed(MecanumAutonomous.Speed.FAST);
 
                 // --- Don't drive over to drop off block if not enough time to then go park
-                if (getGameTime() > 24) {
+                if (getGameTime() > 25) {
                     AddMessage("--- less than time, don't leave warehouse ---");
                     appendages.intakeBlocksStop();
                     moveToPosition(distanceIntoWarehouseMax + 3, backwall, 0, "move to park");
@@ -141,6 +154,9 @@ public class BLUE_WAREHOUSE extends AbstractAuto {
             } else { // --- For third block (go park!)
                 appendages.intakeBlocksStop();
                 moveToPosition(distanceIntoWarehouseMax + 3, backwall, 0, "move to park");
+                appendages.gondalaLow();
+                sleep(100);
+                appendages.gondalaDown(); // --- Lower gondola
             }
 
             appendages.disableIntakeGates();

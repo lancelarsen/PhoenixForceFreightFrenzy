@@ -111,7 +111,6 @@ public class AppendagesAutonomous extends BotAppendages {
         // --- Manual down to make sure the gondola is fully down
         gondolaLifter.setPower(-1);
         sleep(250);
-        // gondolaLifter.setPower(0);
     }
 
     public void extakeGondola() {
