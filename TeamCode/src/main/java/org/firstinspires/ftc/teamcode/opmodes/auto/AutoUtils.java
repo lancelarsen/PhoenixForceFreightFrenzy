@@ -9,6 +9,7 @@ public class AutoUtils {
     public enum StartingPosition {
         INSIDE,
         OUTSIDE,
+        OTHER,
     }
 
     public static void sleep(long milliseconds) {

@@ -17,51 +17,36 @@ import org.firstinspires.ftc.teamcode.vision.BarcodeVision;
 @Autonomous(group = "auto")
 public class BLUE_DUCK_CHICAGO extends AbstractAuto {
     public void runOpMode() {
-        initAuto(AutoUtils.Alliance.BLUE, AutoUtils.StartingPosition.OUTSIDE);
+        initAuto(AutoUtils.Alliance.BLUE, AutoUtils.StartingPosition.OTHER);
         appendages.disableIntakeGates();
-
-        // --- Read the barcode position
-        telemetry.addData("Capstone index", vision.getCapstoneIndex());
-        telemetry.addData("Color level", vision.getColorLevel());
-        int barcodePlace = vision.getCapstoneIndex();
-        if (barcodePlace == 0)
-            barcodePlace = 3; // --- Default if not detected
 
         // --- Set our starting position
         drive.setSpeed(MecanumAutonomous.Speed.FAST);
         drive.setCurrentPosition(new Pose2d(-27, 62, 0));
 
-        // --- Move to deploy -- changes based on deploy level
-        // appendages.setGatesUp();
-        switch (barcodePlace) {
-            case 3:
-                drive.line(new Pose2d(-27, 50, Math.toRadians(34)));
-                appendages.gondalaHigh();
-                break;
-            case 2:
-                drive.line(new Pose2d(-24, 35, Math.toRadians(34)));
-                appendages.gondalaMiddle();
-                break;
-            case 1:
-                drive.line(new Pose2d(-16, 26, Math.toRadians(34)));
-                appendages.gondalaLow();
-                break;
-        }
+        appendages.enableDuckWheels(true);
 
-        // --- Deploy!
-        sleep(1500);
-        if (barcodePlace == 1) {
-            appendages.gondolaOpen();
-        } else {
-            appendages.extakeGondola();
-        }
+        // --- Move to the duck spinner
+        drive.line(new Pose2d(-50, 45, 0));
+        drive.turn(180);
+        drive.setSpeed(MecanumAutonomous.Speed.MEDIUM);
+        drive.line(new Pose2d(-62, 55, Math.toRadians(-180)));
+        drive.setSpeed(MecanumAutonomous.Speed.FAST);
+
+        // --- Spin the duck!
+        sleep(3000);
+        appendages.enableDuckWheels(false);
+
+        drive.line(new Pose2d(-55, 45, Math.toRadians(-180)));
+        drive.line(new Pose2d(-30, 15, Math.toRadians(-340)));
+
+        sleep(1000);
+        appendages.gondalaMiddle();
+        sleep(500);
+        appendages.extakeGondola();
+        appendages.gondalaDown();
 
         sleep(500);
-        appendages.gondalaDown();
-        appendages.gondolaClosed();
-
-        drive.line(new Pose2d(-27, 62, 0));
-
-        sleep(4000);
+        drive.line(new Pose2d(-68, 30, Math.toRadians(-270)));
     }
 }

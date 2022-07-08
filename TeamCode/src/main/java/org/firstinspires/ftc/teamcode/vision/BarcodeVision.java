@@ -67,6 +67,8 @@ public class BarcodeVision {
 
     private DetectionRegion detectionRegions[] = new DetectionRegion[3];
 
+    private boolean isInitilized = false;
+
     public BarcodeVision(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
     }
@@ -74,6 +76,8 @@ public class BarcodeVision {
     public void init(AutoUtils.Alliance alliance, AutoUtils.StartingPosition startingPosition) {
         this.alliance = alliance;
         this.startingPosition = startingPosition;
+
+        isInitilized = true;
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources()
                 .getIdentifier(
@@ -220,6 +224,10 @@ public class BarcodeVision {
             setViewportPaused(paused);
             detectionPaused = paused;
         }
+    }
+
+    public boolean isInitilized() {
+        return isInitilized;
     }
 
     public void setViewportPaused(boolean paused) {

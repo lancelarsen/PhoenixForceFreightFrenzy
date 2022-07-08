@@ -8,10 +8,12 @@ import org.firstinspires.ftc.teamcode.drive.MecanumAutonomous;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AbstractAuto;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 
+@Disabled
 @Autonomous(group = "auto")
 public class TEST_GATES extends AbstractAuto {
     public void runOpMode() {

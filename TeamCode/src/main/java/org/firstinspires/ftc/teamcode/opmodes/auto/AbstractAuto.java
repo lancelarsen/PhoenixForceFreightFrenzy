@@ -39,7 +39,9 @@ abstract public class AbstractAuto extends LinearOpMode {
 
         drive.setSpeed(MecanumAutonomous.Speed.FAST);
 
-        vision.init(alliance, startingPosition);
+        if (startingPosition != AutoUtils.StartingPosition.OTHER) {
+            vision.init(alliance, startingPosition);
+        }
 
         RevBlinkinLedDriver.BlinkinPattern basePattern;
 
@@ -57,7 +59,9 @@ abstract public class AbstractAuto extends LinearOpMode {
         nanoClock = NanoClock.system();
         startTime = nanoClock.seconds();
 
-        vision.setDetectionPaused(true);
+        if (vision.isInitilized()) {
+            vision.setDetectionPaused(true);
+        }
 
         appendages.enableIntakeGates();
         updateGameLights(basePattern);
@@ -80,15 +84,17 @@ abstract public class AbstractAuto extends LinearOpMode {
             while (!Thread.interrupted()) {
                 flashLights(basePattern, FlashLength.LONG);
 
-                int capstoneIndex = vision.getCapstoneIndex();
-                for (int i = 0; i < capstoneIndex; i++) {
-                    flashLights(BlinkinPatterns.CAPSTONE_PATTERN, FlashLength.SHORT);
-                }
+                if (vision.isInitilized()) {
+                    int capstoneIndex = vision.getCapstoneIndex();
+                    for (int i = 0; i < capstoneIndex; i++) {
+                        flashLights(BlinkinPatterns.CAPSTONE_PATTERN, FlashLength.SHORT);
+                    }
 
-                telemetry.addData("Camera name", vision.getCameraName());
-                telemetry.addData("Capstone index", vision.getCapstoneIndex());
-                telemetry.addData("Capstone color level", vision.getColorLevel());
-                telemetry.update();
+                    telemetry.addData("Camera name", vision.getCameraName());
+                    telemetry.addData("Capstone index", vision.getCapstoneIndex());
+                    telemetry.addData("Capstone color level", vision.getColorLevel());
+                    telemetry.update();
+                }
             }
         };
 
